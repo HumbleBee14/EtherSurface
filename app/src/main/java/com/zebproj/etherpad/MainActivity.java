@@ -103,7 +103,9 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
     private final int[] sounds = {
             R.id.sound_1,
             R.id.sound_2,
-            R.id.sound_3
+            R.id.sound_3,
+            R.id.giveitatri,
+            R.id.digitalmonk
     };
 
     private final int[] scaleMajor   = { 0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23 };
@@ -252,6 +254,19 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
         } catch (Exception t) {
             Log.e(TAG, "Failed to start Csound", t);
             csound = null;
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (csound != null) {
+            for (int id = 0; id < MAX_TOUCHES; id++) {
+                if (touchIds[id] != -1) {
+                    csound.InputMessage(touchOffScore[id]);
+                    touchIds[id] = -1;
+                }
+            }
         }
     }
 

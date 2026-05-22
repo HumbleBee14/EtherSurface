@@ -53,6 +53,13 @@ release, edit `CSOUND_RELEASE_TAG` in `scripts/fetch-csound.sh` and run the
 script — it will refresh the `.so` files (and, if `d2j-dex2jar.sh` is on your
 PATH, the `csnd.jar` as well).
 
+## Docs
+
+- [docs/BUILD.md](docs/BUILD.md) — build, install, runtime debug.
+- [docs/CSOUND.md](docs/CSOUND.md) — Csound vendoring, API changes since 2014.
+- [docs/CSD.md](docs/CSD.md) — the synth definition, channels, known issues.
+- [docs/MIGRATION.md](docs/MIGRATION.md) — what changed from the 2014 Eclipse project.
+
 ## License
 
 GPL-3.0. See `gpl-3.0.txt`.

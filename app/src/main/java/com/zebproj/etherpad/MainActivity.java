@@ -55,8 +55,6 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
     private static final String TAG = "EtherPad";
 
     static {
-        // Csound's native engine — JNI loader picks the right ABI from jniLibs.
-        // Load order matters: dependencies before dependents.
         System.loadLibrary("c++_shared");
         System.loadLibrary("sndfile");
         System.loadLibrary("oboe");
@@ -207,7 +205,6 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
             String csd = getResourceFileAsString(R.raw.etherpad);
             csound = new CsoundOboe();
 
-            // Route Csound's stdout/stderr into logcat so .csd compile errors are visible.
             csoundMessages = new CsoundCallbackWrapper(csound.getCsound()) {
                 @Override
                 public void MessageCallback(int attr, String msg) {
@@ -215,25 +212,21 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
                 }
             };
             csoundMessages.SetMessageCallback();
-            csound.SetMessageLevel(7); // 1=note amps, 2=out-of-range, 4=warnings
+            csound.SetMessageLevel(7);
 
             int compileResult = csound.CompileCsdText(csd);
-            Log.d(TAG, "CompileCsdText returned " + compileResult);
             if (compileResult != 0) {
-                Log.e(TAG, "Csound failed to compile the .csd; result=" + compileResult);
+                Log.e(TAG, "CompileCsdText failed: " + compileResult);
                 return;
             }
 
             int startResult = csound.Start();
-            Log.d(TAG, "Start returned " + startResult);
             if (startResult != 0) {
-                Log.e(TAG, "Csound failed to start; result=" + startResult);
+                Log.e(TAG, "Start failed: " + startResult);
                 return;
             }
 
-            // Play() spins up the Oboe audio thread; from here, samples flow.
             csound.Play();
-            Log.d(TAG, "Csound is now playing");
 
             multiTouchView.numberOfNotesProvider = () -> {
                 if (csound == null) return 8.0;
@@ -285,7 +278,6 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
     public void openScale(View view)  { openMenu("scales"); }
 
     private void openMenu(String name) {
-        Log.d(TAG, "openMenu " + name);
         int id = getResources().getIdentifier(name, "id", getPackageName());
         int menuId = getResources().getIdentifier(name, "menu", getPackageName());
         View myView = findViewById(id);

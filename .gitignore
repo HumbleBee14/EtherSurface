@@ -1,5 +1,24 @@
+# Build outputs
 *.apk
-EtherPad-unaligned.apk
-EtherPad.apk
+*.aab
+*.ap_
+*.dex
+build/
+.gradle/
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# OS / editor
+.DS_Store
+*.swp
+*~
+
+# Old Eclipse era leftovers
 release-key.keystore
 sign.sh

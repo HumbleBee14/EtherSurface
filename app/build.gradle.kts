@@ -12,10 +12,19 @@ android {
         targetSdk = 34
         versionCode = 2
         versionName = "1.1"
+    }
 
-        ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            isUniversalApk = false
         }
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -38,6 +47,5 @@ android {
 }
 
 dependencies {
-    // Csound for Android — provides com.csounds.* and csnd.* classes plus libcsoundandroid.so
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }

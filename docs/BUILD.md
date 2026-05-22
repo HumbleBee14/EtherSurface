@@ -18,17 +18,21 @@ NDK is not required — we ship prebuilt `.so` files. See
 ./gradlew assembleDebug
 ```
 
-Output: `app/build/outputs/apk/debug/app-debug.apk` (~98 MB, dominated
-by three ABIs of the Csound runtime).
+Output: per-ABI split APKs under `app/build/outputs/apk/debug/`,
+roughly 27 MB (armeabi-v7a) to 37 MB (arm64-v8a) each. The build does
+not produce a universal APK — splits are enabled in
+`app/build.gradle.kts` because the Csound runtime adds ~20 MB per
+ABI and shipping all three to every device is wasteful.
 
 ## Install + run on a connected device
 
 ```sh
-~/Library/Android/sdk/platform-tools/adb install -r \
-    app/build/outputs/apk/debug/app-debug.apk
-~/Library/Android/sdk/platform-tools/adb shell am start \
-    -n com.zebproj.etherpad/.MainActivity
+adb install -r app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
+adb shell am start -n com.zebproj.etherpad/.MainActivity
 ```
+
+(Pick `app-armeabi-v7a-debug.apk` for older 32-bit ARM devices or
+`app-x86_64-debug.apk` for emulators.)
 
 ## Debug Csound at runtime
 

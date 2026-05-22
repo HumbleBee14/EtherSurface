@@ -41,22 +41,22 @@ import android.view.View;
 
 public class MultiTouchView extends View{
 	private static double SIZE;
-	private Paint mPaint;
-	private Paint textPaint;
 	private Paint bgPaint;
 	private Paint circlePaint;
 	private Paint linePaint;
 	boolean isVisible[] = new boolean[10];
-	int totalPointers = 0;
 	int touchIds[] = new int[10];
 	float touchX[] = new float[10];
 	float touchY[] = new float[10];
 	Path path = new Path();
 	double numberOfNotes = 8.0f;
-	double pulseMod[] = new double[10];
 
-	public interface NumberOfNotesProvider { double get(); }
-	public NumberOfNotesProvider numberOfNotesProvider;
+	public void setNumberOfNotes(double n) {
+		if (n > 0 && n != numberOfNotes) {
+			numberOfNotes = n;
+			postInvalidate();
+		}
+	}
 	
 	public MultiTouchView(Context context, AttributeSet attrs){
 		super(context, attrs);
@@ -66,11 +66,6 @@ public class MultiTouchView extends View{
 	private void initView(){
 		Resources r = getResources();
 		SIZE = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60, r.getDisplayMetrics());
-		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mPaint.setColor(Color.BLUE);
-		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-		textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		textPaint.setTextSize(20);
 		bgPaint = new Paint();
 		bgPaint.setColor(Color.rgb(0x3b, 0x44, 0x4b));
 		bgPaint.setStyle(Paint.Style.FILL);
@@ -86,13 +81,12 @@ public class MultiTouchView extends View{
 		linePaint.setStrokeJoin(Paint.Join.ROUND);
 		for(int i = 0; i < 10; i++) {
 			isVisible[i] = false;
-			pulseMod[i] = 1;
 		}
 		for(int i = 0; i < touchIds.length; i++) {
 			touchIds[i] = -1;
 			touchX[i] = -1;
 			touchY[i] = -1;
-		}	
+		}
 
 	}
 	
@@ -162,11 +156,6 @@ public class MultiTouchView extends View{
 	@Override
 	protected void onDraw(Canvas canvas){
 		canvas.drawPaint(bgPaint);
-
-		if (numberOfNotesProvider != null) {
-			double live = numberOfNotesProvider.get();
-			if (live > 0) numberOfNotes = live;
-		}
 
 		for (int i = 1; i <= numberOfNotes - 1; i++){
 			path.moveTo((float)(this.getWidth() / numberOfNotes) * i, 0);

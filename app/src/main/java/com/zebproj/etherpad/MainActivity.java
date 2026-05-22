@@ -217,11 +217,6 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
     }
 
     private void startCsound() {
-        multiTouchView.numberOfNotesProvider = () -> {
-            if (csound == null) return 8.0;
-            return csound.GetControlChannel("size");
-        };
-
         try {
             String csd = getResourceFileAsString(R.raw.etherpad);
             csound = new CsoundOboe();
@@ -274,7 +269,7 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
         }
     }
 
-    private String getResourceFileAsString(int resId) {
+    private String getResourceFileAsString(int resId) throws IOException {
         StringBuilder str = new StringBuilder();
         InputStream is = getResources().openRawResource(resId);
         try (BufferedReader r = new BufferedReader(new InputStreamReader(is))) {
@@ -282,7 +277,6 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
             while ((line = r.readLine()) != null) {
                 str.append(line).append("\n");
             }
-        } catch (IOException ignored) {
         }
         return str.toString();
     }
@@ -317,22 +311,19 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
 
     private void setSize(int size) {
         if (csound != null) csound.InputMessage(String.format("i100 0 0.5 %d", size));
-        multiTouchView.invalidate();
+        multiTouchView.setNumberOfNotes(size);
     }
 
     private void setKey(int key) {
         if (csound != null) csound.InputMessage(String.format("i101 0 0.5 %d", key));
-        multiTouchView.invalidate();
     }
 
     private void setOctave(int oct) {
         if (csound != null) csound.InputMessage(String.format("i102 0 0.5 %d", oct));
-        multiTouchView.invalidate();
     }
 
     private void setSound(int sound) {
         if (csound != null) csound.InputMessage(String.format("i104 0 0.5 %d", sound));
-        multiTouchView.invalidate();
     }
 
     private void setScale(int[] scale) {
@@ -347,7 +338,6 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
                     scale[8], scale[9], scale[10], scale[11],
                     scale[12], scale[13]));
         }
-        multiTouchView.invalidate();
     }
 
     public void openAbout(View view) {

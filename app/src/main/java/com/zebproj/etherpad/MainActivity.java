@@ -55,8 +55,10 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
 
     static {
         // Csound's native engine — JNI loader picks the right ABI from jniLibs.
-        // libc++_shared.so must load before libcsoundandroid.so.
+        // Load order matters: dependencies before dependents.
         System.loadLibrary("c++_shared");
+        System.loadLibrary("sndfile");
+        System.loadLibrary("oboe");
         System.loadLibrary("csoundandroid");
     }
 

@@ -27,6 +27,8 @@ for abi in arm64-v8a armeabi-v7a x86_64; do
     unzip -j -o "$TMP_DIR/csound.apk" \
         "lib/$abi/libcsoundandroid.so" \
         "lib/$abi/libc++_shared.so" \
+        "lib/$abi/libsndfile.so" \
+        "lib/$abi/liboboe.so" \
         -d "$JNI_DIR/$abi/" >/dev/null
 done
 

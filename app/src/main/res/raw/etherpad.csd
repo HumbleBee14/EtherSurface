@@ -326,6 +326,7 @@ endin
 
 </CsInstruments>
 <CsScore>
+#define INF # 360000 #
 i888 0 $INF
 i999 0 $INF
 i"Mixer" 0 $INF

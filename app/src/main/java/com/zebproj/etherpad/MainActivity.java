@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import csnd.CsoundCallbackWrapper;
 import csnd.CsoundOboe;
 
 public class MainActivity extends Activity implements OnMenuItemClickListener {
@@ -63,6 +64,7 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
     }
 
     private CsoundOboe csound;
+    private CsoundCallbackWrapper csoundMessages;
     public MultiTouchView multiTouchView;
 
     private final int[] touchIds = new int[10];
@@ -204,19 +206,39 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
         try {
             String csd = getResourceFileAsString(R.raw.etherpad);
             csound = new CsoundOboe();
-            csound.SetMessageLevel(0);
-            int result = csound.CompileCsdText(csd);
-            Log.d(TAG, "CompileCsdText returned " + result);
-            if (result == 0) {
-                csound.start();
-                csound.Play();
-                multiTouchView.numberOfNotesProvider = () -> {
-                    if (csound == null) return 8.0;
-                    return csound.GetControlChannel("size");
-                };
-            } else {
-                Log.e(TAG, "Csound failed to compile the .csd; result=" + result);
+
+            // Route Csound's stdout/stderr into logcat so .csd compile errors are visible.
+            csoundMessages = new CsoundCallbackWrapper(csound.getCsound()) {
+                @Override
+                public void MessageCallback(int attr, String msg) {
+                    Log.d(TAG, "csound: " + msg.trim());
+                }
+            };
+            csoundMessages.SetMessageCallback();
+            csound.SetMessageLevel(7); // 1=note amps, 2=out-of-range, 4=warnings
+
+            int compileResult = csound.CompileCsdText(csd);
+            Log.d(TAG, "CompileCsdText returned " + compileResult);
+            if (compileResult != 0) {
+                Log.e(TAG, "Csound failed to compile the .csd; result=" + compileResult);
+                return;
             }
+
+            int startResult = csound.Start();
+            Log.d(TAG, "Start returned " + startResult);
+            if (startResult != 0) {
+                Log.e(TAG, "Csound failed to start; result=" + startResult);
+                return;
+            }
+
+            // Play() spins up the Oboe audio thread; from here, samples flow.
+            csound.Play();
+            Log.d(TAG, "Csound is now playing");
+
+            multiTouchView.numberOfNotesProvider = () -> {
+                if (csound == null) return 8.0;
+                return csound.GetControlChannel("size");
+            };
         } catch (Throwable t) {
             Log.e(TAG, "Failed to start Csound", t);
         }

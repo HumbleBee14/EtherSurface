@@ -27,8 +27,17 @@ Requirements:
 ./gradlew assembleDebug
 ```
 
-The resulting APK lands at `app/build/outputs/apk/debug/app-debug.apk` (~74 MB,
-mostly the bundled Csound engine).
+Per-ABI split APKs are written to `app/build/outputs/apk/debug/`:
+
+| ABI            | Approx. size | Targets                               |
+| -------------- | ------------ | ------------------------------------- |
+| `arm64-v8a`    | ~37 MB       | every modern Android phone            |
+| `armeabi-v7a`  | ~27 MB       | older 32-bit ARM devices              |
+| `x86_64`       | ~34 MB       | emulators, ChromeOS x86 devices       |
+
+Most users only need `app-arm64-v8a-debug.apk`. The size is dominated by
+Csound 6.19's native engine; the 2014 build was smaller because it
+shipped only `armeabi-v7a` and Csound 5.x.
 
 ## Project layout
 

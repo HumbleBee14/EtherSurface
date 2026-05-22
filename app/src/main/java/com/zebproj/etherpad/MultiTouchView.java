@@ -138,20 +138,19 @@ public class MultiTouchView extends View{
 		}
 			break;
 		}
-		case MotionEvent.ACTION_POINTER_UP:{
-
-		}
+		case MotionEvent.ACTION_POINTER_UP:
 		case MotionEvent.ACTION_UP: {
 			int activePointerIndex = event.getActionIndex();
 			int pointerId = event.getPointerId(activePointerIndex);
-				
+
 			int id = getTouchId(pointerId);
 			if(id != -1) {
 				touchIds[id] = -1;
 				isVisible[id] = false;
 			}
+			break;
 		}
-		
+
 		}
 	
 

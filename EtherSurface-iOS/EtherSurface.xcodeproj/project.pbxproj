@@ -1,0 +1,408 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		23B6B950C905CD0E24563037 /* etherpad.csd in Resources */ = {isa = PBXBuildFile; fileRef = 2AAFC2E3511EC1E15B11152C /* etherpad.csd */; };
+		37C6ABF76E4DAF623B8CF569 /* logo_shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A5BB333ECC9469751EBCA26 /* logo_shadow.png */; };
+		40E3D365C18539F2FEDB3949 /* CsoundObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F27D8CE40A002F33AE5D371 /* CsoundObj.m */; };
+		5E2F8DAAF338A0A386BAA573 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF59E8C574D9F23440EEAA6 /* AppDelegate.swift */; };
+		A6220EE26DF77B1F7BB07A5B /* EtherSurfaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45A6FC8E72E5F76D667776A /* EtherSurfaceViewController.swift */; };
+		AA7EEBC00F809FAA163EA3C0 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = FB6D6CFF09FC4FFF00173174 /* logo.png */; };
+		B5485E7CEEF6E31ED6EA3E5D /* TouchSurfaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCDF72A7572D182527EB70C /* TouchSurfaceView.swift */; };
+		C397246D22AFB03BCAD1F348 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F596F37EDCAD3A5897614F3 /* Assets.xcassets */; };
+		D31FB91EE80C77691FE2B856 /* about.html in Resources */ = {isa = PBXBuildFile; fileRef = F752E19FAFA278E038151938 /* about.html */; };
+		EFCE75C9E6F4EA0D4C4387BD /* CsoundEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D16BE37D41AA9E7D6B781A /* CsoundEngine.swift */; };
+		F52F3B359F960552E55F1166 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D6713FA6F75EF5F1CE2A741 /* LaunchScreen.storyboard */; };
+		FF365A60A91F3EA0C24E056E /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A0816C020BF0ABC8D41B1C /* AboutViewController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1108A6C03B3C37B0106521D5 /* CsoundObj.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CsoundObj.h; sourceTree = "<group>"; };
+		2AAFC2E3511EC1E15B11152C /* etherpad.csd */ = {isa = PBXFileReference; path = etherpad.csd; sourceTree = "<group>"; };
+		4A5BB333ECC9469751EBCA26 /* logo_shadow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_shadow.png; sourceTree = "<group>"; };
+		71D16BE37D41AA9E7D6B781A /* CsoundEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsoundEngine.swift; sourceTree = "<group>"; };
+		7BF59E8C574D9F23440EEAA6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7D6713FA6F75EF5F1CE2A741 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7F596F37EDCAD3A5897614F3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		97A0816C020BF0ABC8D41B1C /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
+		9F27D8CE40A002F33AE5D371 /* CsoundObj.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CsoundObj.m; sourceTree = "<group>"; };
+		BBCDF72A7572D182527EB70C /* TouchSurfaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchSurfaceView.swift; sourceTree = "<group>"; };
+		CC90D15AF8CA6F08D2A79874 /* EtherSurface.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = EtherSurface.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D45A6FC8E72E5F76D667776A /* EtherSurfaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherSurfaceViewController.swift; sourceTree = "<group>"; };
+		E57CB3960F46B4B9EBF73C39 /* EtherSurface-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EtherSurface-Bridging-Header.h"; sourceTree = "<group>"; };
+		EB7AE4875073C58EF9C48388 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F752E19FAFA278E038151938 /* about.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = about.html; sourceTree = "<group>"; };
+		FB6D6CFF09FC4FFF00173174 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0E82060D587238367A90A289 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2AAFC2E3511EC1E15B11152C /* etherpad.csd */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		3D7980E591E911F6833DE9F8 = {
+			isa = PBXGroup;
+			children = (
+				64B5B26DB148A762B90F836A /* EtherSurface */,
+				DEBA61FC52554F67FB46D7E1 /* Headers */,
+				E8E9C118AF0EF0C30AFD340C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		64B5B26DB148A762B90F836A /* EtherSurface */ = {
+			isa = PBXGroup;
+			children = (
+				7BF59E8C574D9F23440EEAA6 /* AppDelegate.swift */,
+				7F596F37EDCAD3A5897614F3 /* Assets.xcassets */,
+				E57CB3960F46B4B9EBF73C39 /* EtherSurface-Bridging-Header.h */,
+				D45A6FC8E72E5F76D667776A /* EtherSurfaceViewController.swift */,
+				EB7AE4875073C58EF9C48388 /* Info.plist */,
+				7D6713FA6F75EF5F1CE2A741 /* LaunchScreen.storyboard */,
+				FAF2E341946FCC8C6F0014AE /* About */,
+				CCE3527AC4F29A1FB109BB68 /* Engine */,
+				0E82060D587238367A90A289 /* Resources */,
+				756EEFA6914F7ED110A72201 /* Views */,
+			);
+			path = EtherSurface;
+			sourceTree = "<group>";
+		};
+		756EEFA6914F7ED110A72201 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BBCDF72A7572D182527EB70C /* TouchSurfaceView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		CCE3527AC4F29A1FB109BB68 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				71D16BE37D41AA9E7D6B781A /* CsoundEngine.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		DEBA61FC52554F67FB46D7E1 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				1108A6C03B3C37B0106521D5 /* CsoundObj.h */,
+				9F27D8CE40A002F33AE5D371 /* CsoundObj.m */,
+			);
+			path = Headers;
+			sourceTree = "<group>";
+		};
+		E8E9C118AF0EF0C30AFD340C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CC90D15AF8CA6F08D2A79874 /* EtherSurface.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAF2E341946FCC8C6F0014AE /* About */ = {
+			isa = PBXGroup;
+			children = (
+				F752E19FAFA278E038151938 /* about.html */,
+				97A0816C020BF0ABC8D41B1C /* AboutViewController.swift */,
+				4A5BB333ECC9469751EBCA26 /* logo_shadow.png */,
+				FB6D6CFF09FC4FFF00173174 /* logo.png */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		047C424D2DD3FCE6AACF5A23 /* EtherSurface */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 45CF1265DB5E17E1B0A16F38 /* Build configuration list for PBXNativeTarget "EtherSurface" */;
+			buildPhases = (
+				432CD3C97FD8785748B02E00 /* Sources */,
+				95FE03720187EB3B6DF2FC9E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EtherSurface;
+			packageProductDependencies = (
+			);
+			productName = EtherSurface;
+			productReference = CC90D15AF8CA6F08D2A79874 /* EtherSurface.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		39842E14889106DC8789929A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					047C424D2DD3FCE6AACF5A23 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 64B99F727B5F9E308EFD7794 /* Build configuration list for PBXProject "EtherSurface" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 3D7980E591E911F6833DE9F8;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = E8E9C118AF0EF0C30AFD340C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				047C424D2DD3FCE6AACF5A23 /* EtherSurface */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		95FE03720187EB3B6DF2FC9E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C397246D22AFB03BCAD1F348 /* Assets.xcassets in Resources */,
+				F52F3B359F960552E55F1166 /* LaunchScreen.storyboard in Resources */,
+				D31FB91EE80C77691FE2B856 /* about.html in Resources */,
+				23B6B950C905CD0E24563037 /* etherpad.csd in Resources */,
+				AA7EEBC00F809FAA163EA3C0 /* logo.png in Resources */,
+				37C6ABF76E4DAF623B8CF569 /* logo_shadow.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		432CD3C97FD8785748B02E00 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF365A60A91F3EA0C24E056E /* AboutViewController.swift in Sources */,
+				5E2F8DAAF338A0A386BAA573 /* AppDelegate.swift in Sources */,
+				EFCE75C9E6F4EA0D4C4387BD /* CsoundEngine.swift in Sources */,
+				40E3D365C18539F2FEDB3949 /* CsoundObj.m in Sources */,
+				A6220EE26DF77B1F7BB07A5B /* EtherSurfaceViewController.swift in Sources */,
+				B5485E7CEEF6E31ED6EA3E5D /* TouchSurfaceView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		06F9E77BF6CDE271548B5423 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Headers",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-lc++",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "EtherSurface/EtherSurface-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		71B35166E99BB82BA468493B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = EtherSurface/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zebproj.ethersurface;
+				SDKROOT = iphoneos;
+				SUPPORTED_INTERFACE_ORIENTATIONS = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				"SUPPORTED_INTERFACE_ORIENTATIONS~ipad" = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B815978FB5CB51DB9301F0AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = EtherSurface/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zebproj.ethersurface;
+				SDKROOT = iphoneos;
+				SUPPORTED_INTERFACE_ORIENTATIONS = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				"SUPPORTED_INTERFACE_ORIENTATIONS~ipad" = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		C18ADE38A5D6065C8932EEB8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Headers",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"-lc++",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "EtherSurface/EtherSurface-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		45CF1265DB5E17E1B0A16F38 /* Build configuration list for PBXNativeTarget "EtherSurface" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				71B35166E99BB82BA468493B /* Debug */,
+				B815978FB5CB51DB9301F0AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		64B99F727B5F9E308EFD7794 /* Build configuration list for PBXProject "EtherSurface" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				06F9E77BF6CDE271548B5423 /* Debug */,
+				C18ADE38A5D6065C8932EEB8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 39842E14889106DC8789929A /* Project object */;
+}

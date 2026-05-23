@@ -42,6 +42,17 @@ jobs:
       - name: Build Archive
         run: |
           cd EtherSurface-iOS
+
+          # Check if secrets are configured
+          if [ -z "$APPLE_ID" ] || [ -z "$APPLE_ID_PASSWORD" ] || [ -z "$TEAM_ID" ]; then
+            echo "⚠️  GitHub Secrets Not Configured"
+            echo "Add these secrets to: GitHub → Settings → Secrets and variables → Actions"
+            echo "  - APPLE_ID: your Apple email"
+            echo "  - APPLE_ID_PASSWORD: app-specific password from appleid.apple.com"
+            echo "  - APPLE_TEAM_ID: 10-char team ID from developer.apple.com"
+            exit 1
+          fi
+
           xcodebuild \
             -project Etherpad.xcodeproj \
             -scheme Etherpad \
@@ -55,8 +66,16 @@ jobs:
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Export IPA
+        if: success()
         run: |
           cd EtherSurface-iOS
+
+          # Verify archive exists
+          if [ ! -d "build/Etherpad.xcarchive" ]; then
+            echo "❌ Archive not found. Build may have failed."
+            exit 1
+          fi
+
           xcodebuild \
             -exportArchive \
             -archivePath $PWD/build/Etherpad.xcarchive \
@@ -68,11 +87,25 @@ jobs:
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Upload IPA to Artifacts
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: Etherpad.ipa
           path: EtherSurface-iOS/build/ipa/Etherpad.ipa
           retention-days: 30
+
+      - name: Report on Failure
+        if: failure()
+        run: |
+          echo "⚠️  Build Failed"
+          echo ""
+          echo "Common issues:"
+          echo "1. GitHub Secrets not configured (APPLE_ID, APPLE_ID_PASSWORD, APPLE_TEAM_ID)"
+          echo "2. Provisioning profile not set up in Apple Developer account"
+          echo "3. Bundle ID mismatch (should be: com.humblebee.etherpad)"
+          echo ""
+          echo "📖 See IOS_DEPLOYMENT_GUIDE.md for detailed setup instructions"
+          exit 1
 
       - name: Create Release Notes
         run: |

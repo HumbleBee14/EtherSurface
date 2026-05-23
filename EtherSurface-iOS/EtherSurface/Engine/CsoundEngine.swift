@@ -86,16 +86,16 @@ final class CsoundEngine {
             guard let self = self else { return }
             let deadline = Date().addingTimeInterval(2.0)
             while Date() < deadline {
-                if let probe = cs.getInputChannelPtr(self.xChannelNames[0]) {
+                if let probe = cs.getInputChannelPtr(self.xChannelNames[0], channelType: controlChannelType(CSOUND_CONTROL_CHANNEL.rawValue)) {
                     var xPtrs = Array<UnsafeMutablePointer<Float>?>(
                         repeating: nil, count: Self.maxTouches)
                     var yPtrs = Array<UnsafeMutablePointer<Float>?>(
                         repeating: nil, count: Self.maxTouches)
                     xPtrs[0] = probe
-                    yPtrs[0] = cs.getInputChannelPtr(self.yChannelNames[0])
+                    yPtrs[0] = cs.getInputChannelPtr(self.yChannelNames[0], channelType: controlChannelType(CSOUND_CONTROL_CHANNEL.rawValue))
                     for i in 1..<Self.maxTouches {
-                        xPtrs[i] = cs.getInputChannelPtr(self.xChannelNames[i])
-                        yPtrs[i] = cs.getInputChannelPtr(self.yChannelNames[i])
+                        xPtrs[i] = cs.getInputChannelPtr(self.xChannelNames[i], channelType: controlChannelType(CSOUND_CONTROL_CHANNEL.rawValue))
+                        yPtrs[i] = cs.getInputChannelPtr(self.yChannelNames[i], channelType: controlChannelType(CSOUND_CONTROL_CHANNEL.rawValue))
                     }
                     DispatchQueue.main.async {
                         self.xChannelPtrs = xPtrs

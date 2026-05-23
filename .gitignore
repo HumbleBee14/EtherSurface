@@ -1,3 +1,28 @@
+# ============================================================
+# EtherSurface — combined .gitignore for Android + iOS monorepo
+# ============================================================
+
+# ─── OS / editor ────────────────────────────────────────────
+.DS_Store
+*.swp
+*~
+Thumbs.db
+
+# ─── Claude Code internal state ─────────────────────────────
+.claude/
+
+# ─── Old Eclipse era leftovers ──────────────────────────────
+release-key.keystore
+sign.sh
+
+# ─── Local reference material — decompiled original APK ─────
+# Kept on disk for diffing but never built or shipped.
+legacy/
+
+# ============================================================
+# Android (EtherSurface-Android/)
+# ============================================================
+
 # Build outputs
 *.apk
 *.aab
@@ -14,18 +39,53 @@ captures/
 .externalNativeBuild/
 .cxx/
 
-# OS / editor
-.DS_Store
-*.swp
-*~
+# ============================================================
+# iOS (EtherSurface-iOS/)
+# ============================================================
 
-# Old Eclipse era leftovers
-release-key.keystore
-sign.sh
+# Xcode user-specific state (window layout, breakpoints, scheme
+# selection, etc.) — never share between developers.
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.pbxuser
 
-# Local reference material — decompiled original APK, kept for diffing
-# but never built or shipped.
-legacy/
+# Xcode build / derived data
+DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
 
-# Claude Code internal state (worktrees, transcripts, etc.)
-.claude/
+# Swift Package Manager
+.swiftpm/
+.build/
+Package.resolved
+
+# CocoaPods (if anyone adds it later)
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Third-party binary frameworks — large (~12 MB combined) and
+# downloaded per-developer via EtherSurface-iOS/SETUP_CSOUND.md,
+# not committed to git.
+*.xcframework/
+
+# NOTE: our own small Objective-C shim sources under
+# EtherSurface-iOS/Headers/ (CsoundObj.h/.m, CsoundMIDI.h/.m) are
+# patched copies of the Csound iOS examples that are part of the
+# build and remain tracked. The *.xcframework/ rule only matches
+# directories, so individual .h/.m files outside any xcframework
+# are not affected.

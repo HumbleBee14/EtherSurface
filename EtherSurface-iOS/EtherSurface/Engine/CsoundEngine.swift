@@ -71,17 +71,42 @@ final class CsoundEngine {
         let cs = CsoundObj()
         csound = cs
 
-        // Start Csound — play() compiles + starts + begins the audio thread.
+        // CsoundObj.play(_:) is asynchronous — it spawns a render thread and
+        // returns immediately. The channel pointers are only valid *after*
+        // the orchestra has been compiled. Asking for them on the same tick
+        // returns nil and every touch becomes a silent no-op.
         cs.play(csdPath)
         isRunning = true
 
-        // Grab channel pointers now that the engine is running.
-        // CsoundObj.getInputChannelPtr(_:) returns a float* for the named
-        // control channel. All channels used by instr 1 are control-rate
-        // (chnget in the CSD).
-        for i in 0..<Self.maxTouches {
-            xChannelPtrs[i] = cs.getInputChannelPtr(xChannelNames[i])
-            yChannelPtrs[i] = cs.getInputChannelPtr(yChannelNames[i])
+        // Poll for channel readiness on a background queue so the UI thread
+        // is not blocked. Retry every 20 ms for up to 2 s. Once the first
+        // channel pointer is non-nil the engine is up; grab all 20 pointers
+        // and we're done.
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            let deadline = Date().addingTimeInterval(2.0)
+            while Date() < deadline {
+                if let probe = cs.getInputChannelPtr(self.xChannelNames[0]) {
+                    var xPtrs = Array<UnsafeMutablePointer<Float>?>(
+                        repeating: nil, count: Self.maxTouches)
+                    var yPtrs = Array<UnsafeMutablePointer<Float>?>(
+                        repeating: nil, count: Self.maxTouches)
+                    xPtrs[0] = probe
+                    yPtrs[0] = cs.getInputChannelPtr(self.yChannelNames[0])
+                    for i in 1..<Self.maxTouches {
+                        xPtrs[i] = cs.getInputChannelPtr(self.xChannelNames[i])
+                        yPtrs[i] = cs.getInputChannelPtr(self.yChannelNames[i])
+                    }
+                    DispatchQueue.main.async {
+                        self.xChannelPtrs = xPtrs
+                        self.yChannelPtrs = yPtrs
+                        print("[EtherSurface] Csound channels bound")
+                    }
+                    return
+                }
+                Thread.sleep(forTimeInterval: 0.02)
+            }
+            print("[EtherSurface] Csound channels never became available — is the real CsoundObj framework linked? See docs/SETUP_CSOUND.md")
         }
     }
 
@@ -102,16 +127,28 @@ final class CsoundEngine {
     /// Start a held note for voice slot `slot` at normalised (x, y).
     func noteOn(slot: Int, x: Float, y: Float) {
         guard isRunning, slot >= 0, slot < Self.maxTouches else { return }
-        xChannelPtrs[slot]?.pointee = x
-        yChannelPtrs[slot]?.pointee = y
+        writeChannel(slot: slot, x: x, y: y)
         csound?.sendScore(noteOnScores[slot])
     }
 
     /// Update the position of an already-playing voice.
     func updatePosition(slot: Int, x: Float, y: Float) {
         guard isRunning, slot >= 0, slot < Self.maxTouches else { return }
-        xChannelPtrs[slot]?.pointee = x
-        yChannelPtrs[slot]?.pointee = y
+        writeChannel(slot: slot, x: x, y: y)
+    }
+
+    /// Set the touch.N.x / touch.N.y channels for `slot`. Uses the cached
+    /// pointer if available (fast — direct memory write) and falls back to
+    /// the score event `chnset` form if the pointer hasn't been bound yet.
+    private func writeChannel(slot: Int, x: Float, y: Float) {
+        if let xp = xChannelPtrs[slot], let yp = yChannelPtrs[slot] {
+            xp.pointee = x
+            yp.pointee = y
+        } else {
+            // Pointer not bound yet — fall back to score-event channel set.
+            csound?.sendScore("chnset \(x), \"\(xChannelNames[slot])\"")
+            csound?.sendScore("chnset \(y), \"\(yChannelNames[slot])\"")
+        }
     }
 
     /// Release voice slot `slot`.

@@ -119,6 +119,24 @@ override func touchesCancelled(_ t: Set<UITouch>, with e: UIEvent?) {
 That's the entire equivalent of the 60-line `OnTouchListener` block in
 [MainActivity.java:155-213](../app/src/main/java/com/zebproj/etherpad/MainActivity.java#L155-L213).
 
+### Hardware multitouch limits (important!)
+
+iOS digitizers cap simultaneous touches in **firmware** — this is not a
+software setting you can override:
+
+| Device              | Max simultaneous UITouches |
+| ------------------- | -------------------------- |
+| iPhone (all models) | **5**                      |
+| iPad (all models)   | **11**                     |
+
+The Android version supports 10 fingers because most modern Android
+digitizers report 10. On iPhone the 6th finger fires
+`touchesCancelled` for the *entire* gesture and stops reporting any of
+the original 5. This is why an iPhone build of EtherSurface plays at
+most 5 simultaneous voices regardless of what `MAX_TOUCHES` is set to.
+**The instrument is designed for iPad** — that is where you get 10+
+voices and it actually matches/exceeds the Android experience.
+
 ### iPad-specific upsides for free
 
 - **Apple Pencil pressure** → use `UITouch.force / UITouch.maximumPossibleForce`

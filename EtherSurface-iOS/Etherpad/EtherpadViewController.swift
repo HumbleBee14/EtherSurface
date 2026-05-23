@@ -1,4 +1,4 @@
-// EtherSurfaceViewController.swift — main view controller
+// EtherpadViewController.swift — main view controller
 //
 // Faithful port of MainActivity.java: full-screen touch surface with a
 // toolbar row of five popup menus (Scale, Key, Octave, Size, Sound, About).
@@ -8,7 +8,7 @@
 import UIKit
 import AVFoundation
 
-final class EtherSurfaceViewController: UIViewController, TouchSurfaceDelegate {
+final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
 
     // MARK: - Sub-components
 
@@ -85,6 +85,9 @@ final class EtherSurfaceViewController: UIViewController, TouchSurfaceDelegate {
     override var prefersStatusBarHidden: Bool { true }
     override var prefersHomeIndicatorAutoHidden: Bool { true }
 
+    // Edge touches belong to the synth, not the system swipe-up gestures.
+    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
         engine.allNotesOff()
@@ -100,7 +103,7 @@ final class EtherSurfaceViewController: UIViewController, TouchSurfaceDelegate {
             try session.setPreferredIOBufferDuration(0.005)  // ~5 ms
             try session.setActive(true)
         } catch {
-            print("[EtherSurface] Audio session setup failed: \(error)")
+            print("[Etherpad] Audio session setup failed: \(error)")
         }
     }
 

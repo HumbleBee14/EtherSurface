@@ -1,4 +1,4 @@
-// CsoundEngine.swift — thin wrapper around CsoundObj for EtherSurface
+// CsoundEngine.swift — thin wrapper around CsoundObj for Etherpad
 //
 // CsoundObj comes from the Csound for iOS framework. It provides:
 //   play(_:)              – compile + start + begin audio (async)
@@ -62,7 +62,7 @@ final class CsoundEngine {
         guard !isRunning else { return }
 
         guard let csdPath = Bundle.main.path(forResource: "etherpad", ofType: "csd") else {
-            print("[EtherSurface] etherpad.csd not found in bundle")
+            print("[Etherpad] etherpad.csd not found in bundle")
             return
         }
 
@@ -98,7 +98,7 @@ final class CsoundEngine {
             self.xChannelPtrs = xPtrs
             self.yChannelPtrs = yPtrs
             let bound = xPtrs.compactMap { $0 }.count
-            print("[EtherSurface] Csound channels bound: \(bound)/\(Self.maxTouches)")
+            print("[Etherpad] Csound channels bound: \(bound)/\(Self.maxTouches)")
         }
     }
 

@@ -1,12 +1,9 @@
-// AboutViewController.swift — port of AboutActivity.java
+// AboutViewController.swift — Etherpad About sheet.
 //
-// Renders the About page with native UIKit (UILabel / UITextView /
-// UIImageView). Previously used WKWebView, which works but spawns a
-// WebContent helper process that prints a steady stream of harmless-
-// but-noisy system warnings (sandbox extension failures, missing
-// com.apple.developer.web-browser-engine entitlements, RBS process-
-// termination warnings). Switching to native UI eliminates that noise
-// entirely and shaves a few MB of memory.
+// Native UIKit (UILabel / UITextView / UIImageView) — no WKWebView, so
+// none of the WebContent / browser-engine-entitlement noise in the
+// console. Renders title, developer credit, original-author credit
+// for Paul Batchelor's Android version, and a tappable link.
 
 import UIKit
 
@@ -15,6 +12,7 @@ final class AboutViewController: UIViewController {
     private let bgColor   = UIColor(red: 0x3b/255, green: 0x44/255, blue: 0x4b/255, alpha: 1)
     private let textColor = UIColor(red: 0x50/255, green: 0x72/255, blue: 0xa7/255, alpha: 1)
     private let linkColor = UIColor(red: 0xe9/255, green: 0xd6/255, blue: 0x6b/255, alpha: 1)
+    private let subtleColor = UIColor(white: 1.0, alpha: 0.55)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,60 +26,81 @@ final class AboutViewController: UIViewController {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.alignment = .center
-        stack.spacing = 16
+        stack.spacing = 14
         stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.layoutMargins = UIEdgeInsets(top: 32, left: 24, bottom: 32, right: 24)
+        stack.layoutMargins = UIEdgeInsets(top: 40, left: 28, bottom: 40, right: 28)
         stack.isLayoutMarginsRelativeArrangement = true
         scroll.addSubview(stack)
 
         // Title
         let title = UILabel()
-        title.text = "EtherSurface"
-        title.font = .systemFont(ofSize: 34, weight: .bold)
+        title.text = "Etherpad"
+        title.font = .systemFont(ofSize: 36, weight: .bold)
         title.textColor = textColor
         title.textAlignment = .center
         stack.addArrangedSubview(title)
 
-        // Byline
-        let byline = UILabel()
-        byline.text = "By Paul Batchelor"
-        byline.font = .systemFont(ofSize: 17, weight: .semibold)
-        byline.textColor = textColor
-        byline.textAlignment = .center
-        stack.addArrangedSubview(byline)
+        // Tagline
+        let tagline = UILabel()
+        tagline.text = "A multi-touch synth for iPhone and iPad"
+        tagline.font = .systemFont(ofSize: 16)
+        tagline.textColor = textColor
+        tagline.textAlignment = .center
+        tagline.numberOfLines = 0
+        stack.addArrangedSubview(tagline)
 
-        // Body paragraph
-        let body = UILabel()
-        body.text = "EtherSurface is a performance surface for touch devices. " +
-                    "It is written using Csound 6 and the Csound iOS framework."
-        body.font = .systemFont(ofSize: 16)
-        body.textColor = textColor
-        body.textAlignment = .center
-        body.numberOfLines = 0
-        stack.addArrangedSubview(body)
+        stack.addArrangedSubview(makeSpacer(8))
 
-        // Link 1 — batchelorsounds.com
+        // Developer credit
+        let devLabel = UILabel()
+        devLabel.text = "iOS app by Dinesh (aka HumbleBee)"
+        devLabel.font = .systemFont(ofSize: 17, weight: .semibold)
+        devLabel.textColor = textColor
+        devLabel.textAlignment = .center
+        stack.addArrangedSubview(devLabel)
+
+        // Personal site link
         stack.addArrangedSubview(makeLinkView(
-            leading: "For more information about EtherSurface and other sound design toys and tools, visit ",
-            linkText: "www.batchelorsounds.com",
-            url: URL(string: "https://www.batchelorsounds.com")!))
+            leading: "",
+            linkText: "dineshy.com",
+            url: URL(string: "https://dineshy.com")!))
 
-        // Link 2 — csounds.com
+        stack.addArrangedSubview(makeSpacer(16))
+
+        // Engine credit
+        let engineLabel = UILabel()
+        engineLabel.text = "Sound engine: Csound"
+        engineLabel.font = .systemFont(ofSize: 15)
+        engineLabel.textColor = subtleColor
+        engineLabel.textAlignment = .center
+        stack.addArrangedSubview(engineLabel)
+
         stack.addArrangedSubview(makeLinkView(
-            leading: "For more information about Csound, visit ",
-            linkText: "www.csounds.com",
+            leading: "",
+            linkText: "csounds.com",
             url: URL(string: "https://www.csounds.com")!))
+
+        stack.addArrangedSubview(makeSpacer(20))
+
+        // One-line credit to the original Android author.
+        let creditLabel = UILabel()
+        creditLabel.text = "Inspired by the original EtherSurface by Paul Batchelor."
+        creditLabel.font = .italicSystemFont(ofSize: 13)
+        creditLabel.textColor = subtleColor
+        creditLabel.textAlignment = .center
+        creditLabel.numberOfLines = 0
+        stack.addArrangedSubview(creditLabel)
 
         // Logo
         if let logo = UIImage(named: "logo_shadow") ?? UIImage(named: "logo") {
+            stack.addArrangedSubview(makeSpacer(20))
             let iv = UIImageView(image: logo)
             iv.contentMode = .scaleAspectFit
             iv.translatesAutoresizingMaskIntoConstraints = false
-            iv.heightAnchor.constraint(lessThanOrEqualToConstant: 200).isActive = true
+            iv.heightAnchor.constraint(lessThanOrEqualToConstant: 160).isActive = true
             stack.addArrangedSubview(iv)
         }
 
-        // Layout
         NSLayoutConstraint.activate([
             scroll.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -106,7 +125,7 @@ final class AboutViewController: UIViewController {
         ])
     }
 
-    /// Renders a centred paragraph with one tappable link inline.
+    /// Centred paragraph with a single tappable link.
     private func makeLinkView(leading: String, linkText: String, url: URL) -> UITextView {
         let tv = UITextView()
         tv.isEditable = false
@@ -118,17 +137,24 @@ final class AboutViewController: UIViewController {
         tv.textAlignment = .center
 
         let attr = NSMutableAttributedString(string: leading, attributes: [
-            .font: UIFont.systemFont(ofSize: 16),
+            .font: UIFont.systemFont(ofSize: 15),
             .foregroundColor: textColor,
         ])
         attr.append(NSAttributedString(string: linkText, attributes: [
-            .font: UIFont.systemFont(ofSize: 16),
+            .font: UIFont.systemFont(ofSize: 15),
             .foregroundColor: linkColor,
             .link: url,
         ]))
         tv.attributedText = attr
         tv.linkTextAttributes = [.foregroundColor: linkColor]
         return tv
+    }
+
+    private func makeSpacer(_ height: CGFloat) -> UIView {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.heightAnchor.constraint(equalToConstant: height).isActive = true
+        return v
     }
 
     @objc private func dismissSelf() {

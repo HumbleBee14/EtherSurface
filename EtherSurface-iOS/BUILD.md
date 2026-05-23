@@ -1,13 +1,13 @@
-# Building EtherSurface for iOS — step by step
+# Building Etherpad for iOS — step by step
 
 > Plain-English walkthrough for a clean clone of the repo to a `.app`
 > running on an iPhone or iPad. Last verified end-to-end on **2026-05-22**
 > with Xcode 16.5 (iPhoneOS 26.5 SDK), iPhone 17, Csound iOS 7.0.0-beta.16.
 
-The iOS app links the **Csound for iOS** framework, which is a ~12 MB
-binary blob that is **not committed to git**. So every developer who
-clones the repo has to do a one-time download + Xcode-link dance.
-This document is that dance.
+Etherpad links the **Csound for iOS** framework, which is a ~12 MB
+binary blob that is **not committed to git**. Every developer who clones
+the repo has to do a one-time download + Xcode-link dance. This document
+is that dance.
 
 If you skip a step you will get one of these symptoms, all of which
 mean "the framework integration is wrong":
@@ -39,7 +39,6 @@ mean "the framework integration is wrong":
 | **`git`**                     | any                | comes with Xcode                            |
 
 You do **not** need: XcodeGen, CMake, Homebrew, the Csound source repo.
-Older versions of this doc said you do — they were aspirational.
 
 ---
 
@@ -70,16 +69,15 @@ You should now have a folder like `csound-ios-7.0.0-beta.16/` containing:
 ```
 CsoundiOS.xcframework        ← framework (Csound engine)
 libSndfileiOS.xcframework    ← framework (audio file I/O)
-Csound-iOS-ObjC-Examples/    ← Obj-C examples, contains the CsoundObj wrapper source
+Csound-iOS-ObjC-Examples/    ← Obj-C examples, contains CsoundObj wrapper source
 Csound-iOS-Swift-Examples/   ← Swift examples (we don't need these)
 ```
 
-> **Important — Csound 7 vs Csound 6.** The xcframework is the Csound *C
-> library*. The `CsoundObj` Objective-C wrapper that our Swift code uses
-> is shipped as **source code** inside the `Csound-iOS-ObjC-Examples/`
-> folder (Apple does not have a stable enough Obj-C ABI for Csound to
-> ship `CsoundObj` as a binary). We will copy these `.h/.m` files into
-> the project in Step 4.
+> **Csound 7 vs Csound 6.** The xcframework is the Csound *C library*.
+> The `CsoundObj` Objective-C wrapper that our Swift code uses is shipped
+> as **source code** inside the `Csound-iOS-ObjC-Examples/` folder. Our
+> repo already includes patched copies of those `.h/.m` files at
+> `EtherSurface-iOS/Headers/` — don't replace them.
 
 ---
 
@@ -95,20 +93,20 @@ cp -R ~/Downloads/csound-ios-7.0.0-beta.16/libSndfileiOS.xcframework \
       ~/Documents/GitHub/EtherSurface/EtherSurface-iOS/
 ```
 
-These two folders are **gitignored** so git will ignore them.
+Both folders are gitignored so git will not track them.
 
 ---
 
 ## Step 4 — Confirm the CsoundObj source is in place
 
 The repo *does* track the Objective-C wrapper sources at
-`EtherSurface-iOS/Headers/` because they are tiny and we needed to
-patch them for Csound 7. After cloning, you should already have:
+`EtherSurface-iOS/Headers/` because they are tiny and patched for
+Csound 7. After cloning, you should already have:
 
 ```
 EtherSurface-iOS/Headers/
   CsoundObj.h      ← patched: removed csoundGetOutputBufferSize forward decl
-  CsoundObj.m      ← patched: uses csoundGetKsmps for bufframes
+  CsoundObj.m      ← patched: uses csoundGetKsmps + .playback fix
   CsoundMIDI.h     ← unchanged, required #import target
   CsoundMIDI.m     ← unchanged
 ```
@@ -122,7 +120,7 @@ will not compile against Csound 7. If you accidentally did, the fix is
 ## Step 5 — Open the project in Xcode
 
 ```sh
-open EtherSurface-iOS/EtherSurface.xcodeproj
+open EtherSurface-iOS/Etherpad.xcodeproj
 ```
 
 ---
@@ -133,12 +131,12 @@ In Xcode:
 
 1. In the left sidebar, drag both `CsoundiOS.xcframework` and
    `libSndfileiOS.xcframework` from a Finder window onto the blue
-   **EtherSurface** project icon at the top of the sidebar.
-2. In the dialog that appears: **uncheck "Copy items if needed"** (the
-   files are already in the right place), keep the **EtherSurface
-   target** checkbox checked, click **Finish**.
-3. Click the blue **EtherSurface** project icon → **EtherSurface** target
-   → **General** tab.
+   **Etherpad** project icon at the top of the sidebar.
+2. In the dialog: **uncheck "Copy items if needed"** (files are
+   already in the right place), keep **Etherpad target** checked,
+   click **Finish**.
+3. Click the blue **Etherpad** project icon → **Etherpad** target →
+   **General** tab.
 4. Scroll down to **"Frameworks, Libraries, and Embedded Content"**
    (called **"Embedded Content"** on newer Xcode versions).
 5. If either framework is missing from the list, click the **`+`** under
@@ -148,17 +146,16 @@ In Xcode:
 
 **Common mistake**: ending up with the frameworks listed three or four
 times in "Link Binary With Libraries" under the **Build Phases** tab.
-This happens easily by accident through drag-and-drop. Open Build
-Phases → Link Binary With Libraries — there should be exactly **2
-items** total. Remove duplicates with the `–` button.
+This happens easily through drag-and-drop. Open Build Phases → Link
+Binary With Libraries — there should be exactly **2 items** total.
+Remove duplicates with the `–` button.
 
 ---
 
 ## Step 7 — Verify the linker flags include Accelerate
 
 Csound's FFT library calls Apple's vDSP_* functions, which live in
-`Accelerate.framework`. The repo's `project.pbxproj` already has this
-set up:
+`Accelerate.framework`. The repo's `project.pbxproj` already has this:
 
 ```
 OTHER_LDFLAGS = "-lc++ -framework Accelerate";
@@ -167,7 +164,7 @@ OTHER_LDFLAGS = "-lc++ -framework Accelerate";
 You only need to touch this if you see linker errors like
 `Undefined symbol: _vDSP_create_fftsetup`. In that case:
 
-1. EtherSurface target → **Build Settings** tab → search for
+1. Etherpad target → **Build Settings** tab → search for
    `OTHER_LDFLAGS`.
 2. Set its value to `-lc++ -framework Accelerate`.
 
@@ -175,13 +172,12 @@ You only need to touch this if you see linker errors like
 
 ## Step 8 — Configure code signing
 
-1. EtherSurface target → **Signing & Capabilities** tab.
+1. Etherpad target → **Signing & Capabilities** tab.
 2. Check **"Automatically manage signing"**.
-3. Pick your Apple ID under **Team**. (Free Apple ID works for personal
-   on-device installs.)
+3. Pick your Apple ID under **Team**.
 4. If you get "Bundle identifier is taken", change **Bundle Identifier**
-   from `com.zebproj.ethersurface` to something unique like
-   `com.<yourname>.ethersurface`.
+   from `com.humblebee.etherpad` to something unique like
+   `com.<yourname>.etherpad`.
 
 ---
 
@@ -200,8 +196,9 @@ You only need to touch this if you see linker errors like
 
 You should see:
 - App launches to a dark screen with vertical grid lines and a toolbar
-  at the top.
-- Console (⌘⇧Y) prints **`[EtherSurface] Csound channels bound: 10/10`**
+  at the top showing "Scale: Default", "Key: C", "Octave: 0", "Size: 8",
+  "Sound: Ether Pad", "About".
+- Console (⌘⇧Y) prints **`[Etherpad] Csound channels bound: 10/10`**
   within ~1 second of launch.
 - Touching the screen plays notes.
 
@@ -221,7 +218,7 @@ correctly running.
 
 ---
 
-## What about CLI builds?
+## CLI builds (optional)
 
 You can build from the command line without opening Xcode:
 
@@ -229,37 +226,30 @@ You can build from the command line without opening Xcode:
 cd EtherSurface-iOS
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   xcodebuild \
-    -project EtherSurface.xcodeproj \
-    -scheme EtherSurface \
+    -project Etherpad.xcodeproj \
+    -scheme Etherpad \
     -destination 'generic/platform=iOS' \
     -configuration Debug \
     build
 ```
 
-Useful for CI. Note that `xcodebuild` cannot deploy to a device — for
-that you still need Xcode + a USB-connected phone.
+Useful for CI. `xcodebuild` cannot deploy to a device — for that you
+still need Xcode + a USB-connected phone.
 
 ---
 
-## Console warnings you can safely ignore
+## Console messages you can safely ignore
 
-These appear in the Xcode console at launch and are not problems:
-
-```
-SessionCore.mm:602 Error: category option 'defaultToSpeaker' is only
-  applicable with category 'playAndRecord'
-SessionCore.mm:546 Failed to set properties, error: 4294967246
-```
-
-CsoundObj internally sets some audio-input-related options that don't
-apply because we only need playback. Audio works regardless.
+These appear at launch and are not problems — they're info logs from
+inside Apple's own frameworks, not from our code:
 
 ```
-'UIScene' lifecycle will soon be required. Failure to adopt will
-  result in an assert in the future.
+Reading from public effective user settings.
+CoreUI: CUIThemeStore: No theme registered with id=0
 ```
 
-Apple deprecation warning for a future iOS version. Not urgent.
+Apple has not silenced these despite years of developer feedback. They
+appear in *every* iOS app and cannot be removed from app code.
 
 ---
 
@@ -296,12 +286,13 @@ the current version uses `CsoundObjListener` and waits for
 ### Symptom: linker error `Undefined symbol: _csoundGetOutputBufferSize`
 
 You copied a fresh `CsoundObj.m` from the Csound 7 release zip on top
-of our patched version. Revert with `git checkout EtherSurface-iOS/Headers/CsoundObj.m`.
+of our patched version. Revert with
+`git checkout EtherSurface-iOS/Headers/CsoundObj.m`.
 
 ### Symptom: `'CsoundMIDI.h' file not found`
 
-You only copied `CsoundObj.h/.m`, not `CsoundMIDI.h/.m`. Either pull
-fresh from the repo (they are tracked there) or copy them from
+You only copied `CsoundObj.h/.m`, not `CsoundMIDI.h/.m`. Pull fresh
+from the repo (they are tracked there) or copy them from
 `Csound-iOS-ObjC-Examples/CsoundObj/classes/midi/` in the Csound zip.
 
 ### Symptom: build fails with "no signing certificate"
@@ -317,11 +308,11 @@ Step 9.
 
 ## Why is this so much work?
 
-The iOS port currently depends on Csound, which Apple has no ecosystem
-support for. There is no Swift Package, no CocoaPod, no Homebrew
-formula that gives you the binary in one command. Csound publishes the
-binary on GitHub Releases, but does not ship a stable Obj-C wrapper as
-a framework — only as source code in the examples directory. So every
+The iOS app depends on Csound, which Apple has no ecosystem support
+for. There is no Swift Package, no CocoaPod, no Homebrew formula that
+gives you the binary in one command. Csound publishes the binary on
+GitHub Releases but does not ship a stable Obj-C wrapper as a
+framework — only as source code in their examples directory. So every
 new developer has to:
 
 1. Find the right release on GitHub
@@ -332,14 +323,12 @@ new developer has to:
 6. Patch the wrapper source for whatever C-API changes happened in the
    latest Csound
 
-This is not great. The two ways out are:
+Two ways out long-term:
 
 - **Migrate to AudioKit** (proper Swift Package, one-line `import
   AudioKit`, no framework dance). The cost is rewriting the synth.
   See [../docs/IOS_PORT.md](../docs/IOS_PORT.md) Path B.
-- **Vendor the framework in the repo with Git LFS**. 12 MB binary
-  blob in git history is not free, but it would reduce cloning to a
-  single command. Worth it if more than 2–3 people end up working on
-  this.
+- **Vendor the framework in the repo with Git LFS**. 12 MB binary in
+  git history is not free but reduces cloning to one command.
 
 For now, this doc is the workaround.

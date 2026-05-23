@@ -12,11 +12,10 @@
 		40E3D365C18539F2FEDB3949 /* CsoundObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F27D8CE40A002F33AE5D371 /* CsoundObj.m */; };
 		5E2F8DAAF338A0A386BAA573 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF59E8C574D9F23440EEAA6 /* AppDelegate.swift */; };
 		5E2F8DAAF338A0A386BAA574 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF59E8C574D9F23440EEAA6E /* SceneDelegate.swift */; };
-		A6220EE26DF77B1F7BB07A5B /* EtherSurfaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45A6FC8E72E5F76D667776A /* EtherSurfaceViewController.swift */; };
+		A6220EE26DF77B1F7BB07A5B /* EtherpadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45A6FC8E72E5F76D667776A /* EtherpadViewController.swift */; };
 		AA7EEBC00F809FAA163EA3C0 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = FB6D6CFF09FC4FFF00173174 /* logo.png */; };
 		B5485E7CEEF6E31ED6EA3E5D /* TouchSurfaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCDF72A7572D182527EB70C /* TouchSurfaceView.swift */; };
 		C397246D22AFB03BCAD1F348 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F596F37EDCAD3A5897614F3 /* Assets.xcassets */; };
-		D31FB91EE80C77691FE2B856 /* about.html in Resources */ = {isa = PBXBuildFile; fileRef = F752E19FAFA278E038151938 /* about.html */; };
 		E9D3E6CD2FC13CFB005E6DA3 /* CsoundiOS.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9D3E6CA2FC13C2D005E6DA3 /* CsoundiOS.xcframework */; };
 		E9D3E6CE2FC13CFB005E6DA3 /* CsoundiOS.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E9D3E6CA2FC13C2D005E6DA3 /* CsoundiOS.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E9D3E6D12FC13D02005E6DA3 /* libSndfileiOS.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9D3E6CB2FC13C38005E6DA3 /* libSndfileiOS.xcframework */; };
@@ -54,15 +53,14 @@
 		97A0816C020BF0ABC8D41B1C /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		9F27D8CE40A002F33AE5D371 /* CsoundObj.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CsoundObj.m; sourceTree = "<group>"; };
 		BBCDF72A7572D182527EB70C /* TouchSurfaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchSurfaceView.swift; sourceTree = "<group>"; };
-		CC90D15AF8CA6F08D2A79874 /* EtherSurface.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EtherSurface.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D45A6FC8E72E5F76D667776A /* EtherSurfaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherSurfaceViewController.swift; sourceTree = "<group>"; };
-		E57CB3960F46B4B9EBF73C39 /* EtherSurface-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EtherSurface-Bridging-Header.h"; sourceTree = "<group>"; };
+		CC90D15AF8CA6F08D2A79874 /* Etherpad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Etherpad.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D45A6FC8E72E5F76D667776A /* EtherpadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherpadViewController.swift; sourceTree = "<group>"; };
+		E57CB3960F46B4B9EBF73C39 /* Etherpad-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Etherpad-Bridging-Header.h"; sourceTree = "<group>"; };
 		E9D3E6CA2FC13C2D005E6DA3 /* CsoundiOS.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = CsoundiOS.xcframework; sourceTree = "<group>"; };
 		E9D3E6CB2FC13C38005E6DA3 /* libSndfileiOS.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libSndfileiOS.xcframework; sourceTree = "<group>"; };
 		E9D3E6D62FC13F2F005E6DA3 /* CsoundMIDI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CsoundMIDI.h; sourceTree = "<group>"; };
 		E9D3E6D72FC13F2F005E6DA3 /* CsoundMIDI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CsoundMIDI.m; sourceTree = "<group>"; };
 		EB7AE4875073C58EF9C48388 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		F752E19FAFA278E038151938 /* about.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = about.html; sourceTree = "<group>"; };
 		FB6D6CFF09FC4FFF00173174 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -90,7 +88,7 @@
 		3D7980E591E911F6833DE9F8 = {
 			isa = PBXGroup;
 			children = (
-				64B5B26DB148A762B90F836A /* EtherSurface */,
+				64B5B26DB148A762B90F836A /* Etherpad */,
 				DEBA61FC52554F67FB46D7E1 /* Headers */,
 				E8E9C118AF0EF0C30AFD340C /* Products */,
 				E9D3E6CA2FC13C2D005E6DA3 /* CsoundiOS.xcframework */,
@@ -99,14 +97,14 @@
 			);
 			sourceTree = "<group>";
 		};
-		64B5B26DB148A762B90F836A /* EtherSurface */ = {
+		64B5B26DB148A762B90F836A /* Etherpad */ = {
 			isa = PBXGroup;
 			children = (
 				7BF59E8C574D9F23440EEAA6 /* AppDelegate.swift */,
 				7BF59E8C574D9F23440EEAA6E /* SceneDelegate.swift */,
 				7F596F37EDCAD3A5897614F3 /* Assets.xcassets */,
-				E57CB3960F46B4B9EBF73C39 /* EtherSurface-Bridging-Header.h */,
-				D45A6FC8E72E5F76D667776A /* EtherSurfaceViewController.swift */,
+				E57CB3960F46B4B9EBF73C39 /* Etherpad-Bridging-Header.h */,
+				D45A6FC8E72E5F76D667776A /* EtherpadViewController.swift */,
 				EB7AE4875073C58EF9C48388 /* Info.plist */,
 				7D6713FA6F75EF5F1CE2A741 /* LaunchScreen.storyboard */,
 				FAF2E341946FCC8C6F0014AE /* About */,
@@ -114,7 +112,7 @@
 				0E82060D587238367A90A289 /* Resources */,
 				756EEFA6914F7ED110A72201 /* Views */,
 			);
-			path = EtherSurface;
+			path = Etherpad;
 			sourceTree = "<group>";
 		};
 		756EEFA6914F7ED110A72201 /* Views */ = {
@@ -147,7 +145,7 @@
 		E8E9C118AF0EF0C30AFD340C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CC90D15AF8CA6F08D2A79874 /* EtherSurface.app */,
+				CC90D15AF8CA6F08D2A79874 /* Etherpad.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,7 +160,6 @@
 		FAF2E341946FCC8C6F0014AE /* About */ = {
 			isa = PBXGroup;
 			children = (
-				F752E19FAFA278E038151938 /* about.html */,
 				97A0816C020BF0ABC8D41B1C /* AboutViewController.swift */,
 				4A5BB333ECC9469751EBCA26 /* logo_shadow.png */,
 				FB6D6CFF09FC4FFF00173174 /* logo.png */,
@@ -173,9 +170,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		047C424D2DD3FCE6AACF5A23 /* EtherSurface */ = {
+		047C424D2DD3FCE6AACF5A23 /* Etherpad */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 45CF1265DB5E17E1B0A16F38 /* Build configuration list for PBXNativeTarget "EtherSurface" */;
+			buildConfigurationList = 45CF1265DB5E17E1B0A16F38 /* Build configuration list for PBXNativeTarget "Etherpad" */;
 			buildPhases = (
 				432CD3C97FD8785748B02E00 /* Sources */,
 				95FE03720187EB3B6DF2FC9E /* Resources */,
@@ -186,11 +183,11 @@
 			);
 			dependencies = (
 			);
-			name = EtherSurface;
+			name = Etherpad;
 			packageProductDependencies = (
 			);
-			productName = EtherSurface;
-			productReference = CC90D15AF8CA6F08D2A79874 /* EtherSurface.app */;
+			productName = Etherpad;
+			productReference = CC90D15AF8CA6F08D2A79874 /* Etherpad.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -207,7 +204,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 64B99F727B5F9E308EFD7794 /* Build configuration list for PBXProject "EtherSurface" */;
+			buildConfigurationList = 64B99F727B5F9E308EFD7794 /* Build configuration list for PBXProject "Etherpad" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -221,7 +218,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				047C424D2DD3FCE6AACF5A23 /* EtherSurface */,
+				047C424D2DD3FCE6AACF5A23 /* Etherpad */,
 			);
 		};
 /* End PBXProject section */
@@ -233,7 +230,6 @@
 			files = (
 				C397246D22AFB03BCAD1F348 /* Assets.xcassets in Resources */,
 				F52F3B359F960552E55F1166 /* LaunchScreen.storyboard in Resources */,
-				D31FB91EE80C77691FE2B856 /* about.html in Resources */,
 				23B6B950C905CD0E24563037 /* etherpad.csd in Resources */,
 				AA7EEBC00F809FAA163EA3C0 /* logo.png in Resources */,
 				37C6ABF76E4DAF623B8CF569 /* logo_shadow.png in Resources */,
@@ -253,7 +249,7 @@
 				5E2F8DAAF338A0A386BAA574 /* SceneDelegate.swift in Sources */,
 				EFCE75C9E6F4EA0D4C4387BD /* CsoundEngine.swift in Sources */,
 				40E3D365C18539F2FEDB3949 /* CsoundObj.m in Sources */,
-				A6220EE26DF77B1F7BB07A5B /* EtherSurfaceViewController.swift in Sources */,
+				A6220EE26DF77B1F7BB07A5B /* EtherpadViewController.swift in Sources */,
 				B5485E7CEEF6E31ED6EA3E5D /* TouchSurfaceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -317,7 +313,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Headers";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -326,9 +322,9 @@
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OBJC_BRIDGING_HEADER = "EtherSurface/EtherSurface-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Etherpad/Etherpad-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.9;
+				SWIFT_VERSION = 5.10;
 			};
 			name = Debug;
 		};
@@ -337,13 +333,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				INFOPLIST_FILE = EtherSurface/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				INFOPLIST_FILE = Etherpad/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zebproj.ethersurface;
+				PRODUCT_BUNDLE_IDENTIFIER = com.humblebee.etherpad;
 				SDKROOT = iphoneos;
 				SUPPORTED_INTERFACE_ORIENTATIONS = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				"SUPPORTED_INTERFACE_ORIENTATIONS~ipad" = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -356,13 +352,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				INFOPLIST_FILE = EtherSurface/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				INFOPLIST_FILE = Etherpad/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zebproj.ethersurface;
+				PRODUCT_BUNDLE_IDENTIFIER = com.humblebee.etherpad;
 				SDKROOT = iphoneos;
 				SUPPORTED_INTERFACE_ORIENTATIONS = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				"SUPPORTED_INTERFACE_ORIENTATIONS~ipad" = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -420,7 +416,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Headers";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "-lc++ -framework Accelerate";
@@ -428,16 +424,16 @@
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "EtherSurface/EtherSurface-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Etherpad/Etherpad-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.9;
+				SWIFT_VERSION = 5.10;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		45CF1265DB5E17E1B0A16F38 /* Build configuration list for PBXNativeTarget "EtherSurface" */ = {
+		45CF1265DB5E17E1B0A16F38 /* Build configuration list for PBXNativeTarget "Etherpad" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				71B35166E99BB82BA468493B /* Debug */,
@@ -446,7 +442,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		64B99F727B5F9E308EFD7794 /* Build configuration list for PBXProject "EtherSurface" */ = {
+		64B99F727B5F9E308EFD7794 /* Build configuration list for PBXProject "Etherpad" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				06F9E77BF6CDE271548B5423 /* Debug */,

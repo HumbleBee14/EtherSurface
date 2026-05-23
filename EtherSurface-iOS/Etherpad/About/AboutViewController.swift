@@ -51,6 +51,17 @@ final class AboutViewController: UIViewController {
 
         stack.addArrangedSubview(makeSpacer(8))
 
+        // Performance tip
+        let tip = UILabel()
+        tip.text = "Tip: for live performance, enable Guided Access (Settings → Accessibility) to disable system gestures."
+        tip.font = .italicSystemFont(ofSize: 13)
+        tip.textColor = subtleColor
+        tip.textAlignment = .center
+        tip.numberOfLines = 0
+        stack.addArrangedSubview(tip)
+
+        stack.addArrangedSubview(makeSpacer(8))
+
         // Developer credit
         let devLabel = UILabel()
         devLabel.text = "iOS app by Dinesh (aka HumbleBee)"

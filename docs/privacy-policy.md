@@ -51,7 +51,6 @@ We may update this Privacy Policy from time to time. Any changes will be posted 
 
 If you have any questions about this Privacy Policy, contact:
 
-**Email:** dsyd14usa@gmail.com
 **GitHub:** https://github.com/HumbleBee14/EtherSurface
 
 ---

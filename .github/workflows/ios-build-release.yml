@@ -16,39 +16,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
 
-      - name: List available Xcode versions
-        run: ls -la /Applications/ | grep Xcode
-
-      - name: Select Xcode
+      - name: Setup Xcode
         run: |
-          XCODE_PATH="/Applications/Xcode.app/Contents/Developer"
-          if [ ! -d "$XCODE_PATH" ]; then
-            echo "Xcode not at standard path, searching..."
-            XCODE_PATH=$(find /Applications -name "Xcode.app" -type d 2>/dev/null | head -1)
-            if [ -z "$XCODE_PATH" ]; then
-              XCODE_PATH=$(find /Applications -name "Xcode_*.app" -type d 2>/dev/null | head -1)
-            fi
-            if [ -z "$XCODE_PATH" ]; then
-              echo "❌ Xcode not found!"
-              exit 1
-            fi
-            XCODE_PATH="$XCODE_PATH/Contents/Developer"
-          fi
-          echo "Using Xcode at: $XCODE_PATH"
-          sudo xcode-select --switch "$XCODE_PATH"
+          # Use default Xcode
+          sudo xcode-select --reset
           xcodebuild -version
+          echo "Xcode path: $(xcode-select -p)"
 
-      - name: Cache Pods
-        uses: actions/cache@v4
-        with:
-          path: EtherSurface-iOS/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('EtherSurface-iOS/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-
-      - name: Build for Testing
+      - name: Build Project
         run: |
           cd EtherSurface-iOS
           mkdir -p build
@@ -59,52 +36,40 @@ jobs:
             -scheme Etherpad \
             -configuration Release \
             -derivedDataPath build/DerivedData \
-            clean build \
-            CODE_SIGNING_ALLOWED=NO \
-            -quiet 2>&1 | tee build.log
+            build \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee build.log
 
-          BUILD_STATUS=${PIPESTATUS[0]}
-          if [ $BUILD_STATUS -ne 0 ]; then
-            echo "❌ Build failed!"
-            cat build.log
-            exit $BUILD_STATUS
+          if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            echo "✅ Build succeeded"
+          else
+            echo "❌ Build failed"
+            exit 1
           fi
-          echo "✅ Build succeeded"
 
-      - name: Build Archive (No Signing)
+      - name: Create Archive
         if: success()
         run: |
           cd EtherSurface-iOS
 
-          echo "📦 Creating archive (no code signing)..."
+          echo "📦 Creating archive..."
           xcodebuild \
             -project Etherpad.xcodeproj \
             -scheme Etherpad \
             -configuration Release \
-            -archivePath $PWD/build/Etherpad.xcarchive \
-            CODE_SIGNING_ALLOWED=NO \
-            -quiet \
-            archive 2>&1 | tee archive.log
+            -archivePath build/Etherpad.xcarchive \
+            archive \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee archive.log
 
-          ARCHIVE_STATUS=${PIPESTATUS[0]}
-          if [ $ARCHIVE_STATUS -ne 0 ]; then
-            echo "❌ Archive failed!"
-            cat archive.log
-            exit $ARCHIVE_STATUS
-          fi
-
-          if [ ! -d "build/Etherpad.xcarchive" ]; then
-            echo "❌ Archive not created!"
-            cat archive.log
+          if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            echo "✅ Archive created"
+          else
+            echo "❌ Archive failed"
             exit 1
           fi
 
-          echo "✅ Archive created"
-          ls -lh build/Etherpad.xcarchive
-
-      - name: Upload Build Artifacts
+      - name: Upload Logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         with:
           name: build-logs
           path: |
@@ -112,15 +77,6 @@ jobs:
             EtherSurface-iOS/archive.log
           retention-days: 7
 
-      - name: Summary
+      - name: Success
         if: success()
-        run: |
-          echo "✅ iOS Build Complete!"
-          echo ""
-          echo "Archive created: EtherSurface-iOS/build/Etherpad.xcarchive"
-          echo ""
-          echo "📖 Next Steps:"
-          echo "1. Once code signing is configured, enable provisioning profile export"
-          echo "2. Set APPLE_ID, APPLE_ID_PASSWORD, APPLE_TEAM_ID secrets"
-          echo "3. Create App ID and provisioning profile in Apple Developer"
-          echo "4. Export IPA for App Store submission"
+        run: echo "✅ iOS app built successfully!"

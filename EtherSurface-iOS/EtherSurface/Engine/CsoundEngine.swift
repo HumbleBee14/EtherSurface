@@ -1,19 +1,16 @@
 // CsoundEngine.swift — thin wrapper around CsoundObj for EtherSurface
 //
 // CsoundObj comes from the Csound for iOS framework. It provides:
-//   play(_:)              – compile + start + begin audio
+//   play(_:)              – compile + start + begin audio (async)
 //   stop()                – halt audio
 //   sendScore(_:)         – inject a score event (e.g. "i1.0 0 -2 0")
-//   getInputChannelPtr(_:) – get a float* for a named control channel
+//   getInputChannelPtr:channelType: – float* for a named control channel
+//   addListener(_:)       – fires csoundObjStarted: when mCsData.cs is live
 //
 // This wrapper pre-builds the channel pointers and score strings for
-// 10 touch slots, exactly mirroring the Android MainActivity approach.
+// 10 touch slots, mirroring the Android MainActivity approach.
 
 import Foundation
-
-// ── Forward declaration ─────────────────────────────────────────────
-// CsoundObj is an Objective-C class provided by the Csound iOS framework.
-// It is imported via the bridging header (EtherSurface-Bridging-Header.h).
 
 final class CsoundEngine {
 
@@ -25,8 +22,9 @@ final class CsoundEngine {
 
     private(set) var csound: CsoundObj?
     private var isRunning = false
+    private var listenerBridge: CsoundListenerBridge?
 
-    // MARK: - Pre-built channel pointers (set after play)
+    // MARK: - Pre-built channel pointers (set after csoundObjStarted:)
 
     private var xChannelPtrs: [UnsafeMutablePointer<Float>?] = Array(repeating: nil, count: maxTouches)
     private var yChannelPtrs: [UnsafeMutablePointer<Float>?] = Array(repeating: nil, count: maxTouches)
@@ -35,8 +33,8 @@ final class CsoundEngine {
 
     private let noteOnScores:  [String]
     private let noteOffScores: [String]
-    private let xChannelNames: [String]
-    private let yChannelNames: [String]
+    fileprivate let xChannelNames: [String]
+    fileprivate let yChannelNames: [String]
 
     // MARK: - Init
 
@@ -71,42 +69,36 @@ final class CsoundEngine {
         let cs = CsoundObj()
         csound = cs
 
-        // CsoundObj.play(_:) is asynchronous — it spawns a render thread and
-        // returns immediately. The channel pointers are only valid *after*
-        // the orchestra has been compiled. Asking for them on the same tick
-        // returns nil and every touch becomes a silent no-op.
+        // Register a CsoundObjListener BEFORE calling play(). Its
+        // csoundObjStarted: callback fires once mCsData.cs is set and the
+        // engine is rendering — that is the only safe moment to call
+        // getInputChannelPtr. Calling it sooner (the previous polling-loop
+        // approach) crashes with EXC_BAD_ACCESS because csoundGetChannelPtr
+        // dereferences a not-yet-initialised CSOUND*.
+        let bridge = CsoundListenerBridge(engine: self)
+        listenerBridge = bridge
+        cs.add(bridge)
+
         cs.play(csdPath)
         isRunning = true
+    }
 
-        // Poll for channel readiness on a background queue so the UI thread
-        // is not blocked. Retry every 20 ms for up to 2 s. Once the first
-        // channel pointer is non-nil the engine is up; grab all 20 pointers
-        // and we're done.
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self else { return }
-            let deadline = Date().addingTimeInterval(2.0)
-            while Date() < deadline {
-                if let probe = cs.getInputChannelPtr(self.xChannelNames[0], channelType: controlChannelType(CSOUND_CONTROL_CHANNEL.rawValue)) {
-                    var xPtrs = Array<UnsafeMutablePointer<Float>?>(
-                        repeating: nil, count: Self.maxTouches)
-                    var yPtrs = Array<UnsafeMutablePointer<Float>?>(
-                        repeating: nil, count: Self.maxTouches)
-                    xPtrs[0] = probe
-                    yPtrs[0] = cs.getInputChannelPtr(self.yChannelNames[0], channelType: controlChannelType(CSOUND_CONTROL_CHANNEL.rawValue))
-                    for i in 1..<Self.maxTouches {
-                        xPtrs[i] = cs.getInputChannelPtr(self.xChannelNames[i], channelType: controlChannelType(CSOUND_CONTROL_CHANNEL.rawValue))
-                        yPtrs[i] = cs.getInputChannelPtr(self.yChannelNames[i], channelType: controlChannelType(CSOUND_CONTROL_CHANNEL.rawValue))
-                    }
-                    DispatchQueue.main.async {
-                        self.xChannelPtrs = xPtrs
-                        self.yChannelPtrs = yPtrs
-                        print("[EtherSurface] Csound channels bound")
-                    }
-                    return
-                }
-                Thread.sleep(forTimeInterval: 0.02)
-            }
-            print("[EtherSurface] Csound channels never became available — is the real CsoundObj framework linked? See docs/SETUP_CSOUND.md")
+    /// Called by the listener bridge on the Csound performance thread,
+    /// once the engine is up and channel pointers are valid.
+    fileprivate func bindChannelPointers() {
+        guard let cs = csound else { return }
+        let kType = controlChannelType(CSOUND_CONTROL_CHANNEL.rawValue)
+        var xPtrs = Array<UnsafeMutablePointer<Float>?>(repeating: nil, count: Self.maxTouches)
+        var yPtrs = Array<UnsafeMutablePointer<Float>?>(repeating: nil, count: Self.maxTouches)
+        for i in 0..<Self.maxTouches {
+            xPtrs[i] = cs.getInputChannelPtr(xChannelNames[i], channelType: kType)
+            yPtrs[i] = cs.getInputChannelPtr(yChannelNames[i], channelType: kType)
+        }
+        DispatchQueue.main.async {
+            self.xChannelPtrs = xPtrs
+            self.yChannelPtrs = yPtrs
+            let bound = xPtrs.compactMap { $0 }.count
+            print("[EtherSurface] Csound channels bound: \(bound)/\(Self.maxTouches)")
         }
     }
 
@@ -114,6 +106,7 @@ final class CsoundEngine {
         guard isRunning else { return }
         csound?.stop()
         csound = nil
+        listenerBridge = nil
         isRunning = false
 
         for i in 0..<Self.maxTouches {
@@ -138,17 +131,14 @@ final class CsoundEngine {
     }
 
     /// Set the touch.N.x / touch.N.y channels for `slot`. Uses the cached
-    /// pointer if available (fast — direct memory write) and falls back to
-    /// the score event `chnset` form if the pointer hasn't been bound yet.
+    /// pointer if available (fast — direct memory write); silently drops
+    /// the write if the engine has not finished starting yet. This is
+    /// fine because the engine is usually ready in <100 ms and the first
+    /// human touch arrives much later.
     private func writeChannel(slot: Int, x: Float, y: Float) {
-        if let xp = xChannelPtrs[slot], let yp = yChannelPtrs[slot] {
-            xp.pointee = x
-            yp.pointee = y
-        } else {
-            // Pointer not bound yet — fall back to score-event channel set.
-            csound?.sendScore("chnset \(x), \"\(xChannelNames[slot])\"")
-            csound?.sendScore("chnset \(y), \"\(yChannelNames[slot])\"")
-        }
+        guard let xp = xChannelPtrs[slot], let yp = yChannelPtrs[slot] else { return }
+        xp.pointee = x
+        yp.pointee = y
     }
 
     /// Release voice slot `slot`.
@@ -187,11 +177,27 @@ final class CsoundEngine {
     /// `[-3]` for Overtone High, or a 14-element array for ET scales.
     func setScale(_ steps: [Int]) {
         if steps.count == 1 && steps[0] < 0 {
-            // Sentinels: -1 = Bohlen-Pierce, -2 = Overtone Low, -3 = Overtone High
             csound?.sendScore("i103 0 0.5 \(steps[0])")
         } else if steps.count >= 14 {
             let args = steps.prefix(14).map { String($0) }.joined(separator: " ")
             csound?.sendScore("i103 0 0.5 \(args)")
         }
     }
+}
+
+// MARK: - Listener bridge
+//
+// CsoundObjListener is an Obj-C protocol; the listener must inherit from
+// NSObject. This tiny adapter forwards csoundObjStarted: into the
+// CsoundEngine instance.
+
+private final class CsoundListenerBridge: NSObject, CsoundObjListener {
+    weak var engine: CsoundEngine?
+    init(engine: CsoundEngine) { self.engine = engine }
+
+    func csoundObjStarted(_ csoundObj: CsoundObj!) {
+        engine?.bindChannelPointers()
+    }
+
+    func csoundObjCompleted(_ csoundObj: CsoundObj!) { }
 }

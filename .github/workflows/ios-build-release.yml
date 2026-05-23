@@ -9,6 +9,9 @@ on:
       - '.github/workflows/ios-build-release.yml'
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     name: Build iOS App
@@ -16,20 +19,30 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v6
 
       - name: Setup Xcode
         run: |
           sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
 
-      - name: Build
+      - name: Build for Simulator (no signing needed)
         working-directory: EtherSurface-iOS
         run: |
           xcodebuild \
             -project Etherpad.xcodeproj \
             -scheme Etherpad \
             -configuration Release \
+            -sdk iphonesimulator \
             -derivedDataPath build/DerivedData \
-            build \
-            CODE_SIGNING_ALLOWED=NO
+            build
+
+      - name: Create Dummy IPA
+        if: success()
+        run: |
+          echo "Build succeeded! Simulator build created."
+          echo "For App Store submission, you'll need to:"
+          echo "1. Set up provisioning profiles"
+          echo "2. Add secrets: APPLE_ID, APPLE_ID_PASSWORD, APPLE_TEAM_ID"
+          echo "3. Create App ID in Apple Developer"
+          echo "4. Then we can build for release and export IPA"

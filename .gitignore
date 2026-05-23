@@ -26,3 +26,6 @@ sign.sh
 # Local reference material — decompiled original APK, kept for diffing
 # but never built or shipped.
 legacy/
+
+# Claude Code internal state (worktrees, transcripts, etc.)
+.claude/

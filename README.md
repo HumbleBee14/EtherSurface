@@ -1,74 +1,31 @@
-# EtherSurface (EtherPad)
+# EtherSurface
 
-A multi-touch synthesizer for Android, originally written in 2014 by Paul
-Batchelor at CCRMA, modernized in 2026 to run on current Android versions.
+A multi-touch synthesizer, originally written in 2014 by Paul Batchelor at
+CCRMA. Drag fingers across the screen to play notes — horizontal position
+picks pitch, vertical position controls intensity. Up to ten simultaneous
+touches, ten scales, twelve keys, five octaves, five sound modes. The audio
+engine is Csound; the UI is platform-native.
 
-The instrument is essentially a touch-driven theremin: drag fingers across the
-screen to play notes, with horizontal position selecting pitch and vertical
-position controlling intensity. Up to ten simultaneous touches are supported.
+This repo hosts both the Android and iOS ports of the same instrument, each
+in its own subfolder so the two platforms can evolve independently while
+sharing project-level context (docs, the original 2014 reference material).
 
-## Features
+## Layout
 
-- Selectable scales: Major, Minor, Pentatonic, Blues, Chromatic, Whole-Tone,
-  Octatonic, Flamenco, Bohlen-Pierce, plus the original hybrid Default.
-- Twelve chromatic keys, five-octave range, four to fourteen notes across the
-  surface.
-- Three sound modes: Ether Pad, Distorted Dreams, Xanpalamin.
-- Multi-touch polyphony via Csound 6.
+| Path | Contents |
+| ---- | -------- |
+| [`EtherSurface-Android/`](EtherSurface-Android/) | Android app — Gradle / AGP 8.5 / Java, Csound 6.19 via the Oboe Android SDK. See its own README inside. |
+| `EtherSurface-iOS/` | iOS port (separate branch, work in progress). |
+| [`docs/`](docs/) | Cross-platform reference: architecture, Csound integration notes, the `.csd` synth definition, the 2014→2026 migration log. |
+| `legacy/` | Local-only (gitignored). Decompiled 2014 EtherPad APK and resources, kept for diffing. |
 
-## Build
+## Build & install
 
-Requirements:
-- JDK 17 or 21 (AGP 8.5 does not yet support 25)
-- Android SDK with Platform 34 and Build-Tools 34
-- `ANDROID_HOME` set, or a `local.properties` with `sdk.dir=...`
+See [`EtherSurface-Android/README.md`](EtherSurface-Android/README.md) for the
+Android build, install, and debugging instructions.
 
-```sh
-./gradlew assembleDebug
-```
-
-Per-ABI split APKs are written to `app/build/outputs/apk/debug/`:
-
-| ABI            | Approx. size | Targets                               |
-| -------------- | ------------ | ------------------------------------- |
-| `arm64-v8a`    | ~37 MB       | every modern Android phone            |
-| `armeabi-v7a`  | ~27 MB       | older 32-bit ARM devices              |
-| `x86_64`       | ~34 MB       | emulators, ChromeOS x86 devices       |
-
-Most users only need `app-arm64-v8a-debug.apk`. The size is dominated by
-Csound 6.19's native engine; the 2014 build was smaller because it
-shipped only `armeabi-v7a` and Csound 5.x.
-
-## Project layout
-
-```
-app/
-  src/main/
-    AndroidManifest.xml
-    java/com/zebproj/etherpad/    Activities and custom views
-    res/                          Layouts, menus, strings, drawables
-    assets/                       About-page HTML
-    jniLibs/{arm64-v8a,armeabi-v7a,x86_64}/
-                                  libcsoundandroid.so + libc++_shared.so
-  libs/csnd.jar                   Csound Java bindings
-scripts/fetch-csound.sh           Re-extracts native libs and JAR from a
-                                  gogins/csound-android release
-```
-
-## Updating Csound
-
-The native engine is pinned to gogins/csound-android v48beta2. To pull a newer
-release, edit `CSOUND_RELEASE_TAG` in `scripts/fetch-csound.sh` and run the
-script — it will refresh the `.so` files (and, if `d2j-dex2jar.sh` is on your
-PATH, the `csnd.jar` as well).
-
-## Docs
-
-- [docs/BUILD.md](docs/BUILD.md) — build, install, runtime debug.
-- [docs/CSOUND.md](docs/CSOUND.md) — Csound vendoring, API changes since 2014.
-- [docs/CSD.md](docs/CSD.md) — the synth definition, channels, known issues.
-- [docs/MIGRATION.md](docs/MIGRATION.md) — what changed from the 2014 Eclipse project.
+iOS instructions live on the iOS branch.
 
 ## License
 
-GPL-3.0. See `gpl-3.0.txt`.
+GPL-3.0. See [`gpl-3.0.txt`](gpl-3.0.txt).

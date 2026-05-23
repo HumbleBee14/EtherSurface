@@ -48,7 +48,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import csnd.CsoundCallbackWrapper;
+import csnd.CsoundMYFLTArray;
 import csnd.CsoundOboe;
+import csnd.controlChannelType;
 
 public class MainActivity extends Activity implements OnMenuItemClickListener {
 
@@ -71,19 +73,19 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
     private final float[] touchX = new float[MAX_TOUCHES];
     private final float[] touchY = new float[MAX_TOUCHES];
 
-    private final String[] touchXChannel = new String[MAX_TOUCHES];
-    private final String[] touchYChannel = new String[MAX_TOUCHES];
     private final String[] touchOnScore  = new String[MAX_TOUCHES];
     private final String[] touchOffScore = new String[MAX_TOUCHES];
 
     {
         for (int i = 0; i < MAX_TOUCHES; i++) {
-            touchXChannel[i] = "touch." + i + ".x";
-            touchYChannel[i] = "touch." + i + ".y";
             touchOnScore[i]  = "i1." + i + " 0 -2 " + i;
             touchOffScore[i] = "i-1." + i + " 0 0 " + i;
         }
     }
+
+    private final CsoundMYFLTArray[] touchXPtr = new CsoundMYFLTArray[MAX_TOUCHES];
+    private final CsoundMYFLTArray[] touchYPtr = new CsoundMYFLTArray[MAX_TOUCHES];
+    private CsoundMYFLTArray sizePtr;
 
     private final int[] sizes = { R.id.size_4, R.id.size_5, R.id.size_6, R.id.size_7, R.id.size_8,
             R.id.size_9, R.id.size_10, R.id.size_11, R.id.size_12, R.id.size_13, R.id.size_14 };
@@ -171,10 +173,10 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
                                     touchIds[id] = pointerId;
                                     touchX[id] = event.getX(i) / multiTouchView.getWidth();
                                     touchY[id] = 1 - (event.getY(i) / multiTouchView.getHeight());
-                                    if (csound != null) {
-                                        csound.SetControlChannel(touchXChannel[id], touchX[id]);
-                                        csound.SetControlChannel(touchYChannel[id], touchY[id]);
-                                        csound.InputMessage(touchOnScore[id]);
+                                    if (touchXPtr[id] != null) {
+                                        touchXPtr[id].SetValue(0, touchX[id]);
+                                        touchYPtr[id].SetValue(0, touchY[id]);
+                                        if (csound != null) csound.InputMessage(touchOnScore[id]);
                                     }
                                 }
                             }
@@ -188,9 +190,9 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
                             if (id != -1) {
                                 touchX[id] = event.getX(i) / multiTouchView.getWidth();
                                 touchY[id] = 1 - (event.getY(i) / multiTouchView.getHeight());
-                                if (csound != null) {
-                                    csound.SetControlChannel(touchXChannel[id], touchX[id]);
-                                    csound.SetControlChannel(touchYChannel[id], touchY[id]);
+                                if (touchXPtr[id] != null) {
+                                    touchXPtr[id].SetValue(0, touchX[id]);
+                                    touchYPtr[id].SetValue(0, touchY[id]);
                                 }
                             }
                         }
@@ -222,6 +224,7 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
         try {
             String csd = getResourceFileAsString(R.raw.etherpad);
             csound = new CsoundOboe();
+            csound.setOboeApi(1);
 
             if (BuildConfig.DEBUG) {
                 csoundMessages = new CsoundCallbackWrapper(csound.getCsound()) {
@@ -251,6 +254,21 @@ public class MainActivity extends Activity implements OnMenuItemClickListener {
             }
 
             csound.Play();
+
+            int inputControl = controlChannelType.CSOUND_CONTROL_CHANNEL.swigValue()
+                             | controlChannelType.CSOUND_INPUT_CHANNEL.swigValue();
+            int outputControl = controlChannelType.CSOUND_CONTROL_CHANNEL.swigValue()
+                              | controlChannelType.CSOUND_OUTPUT_CHANNEL.swigValue();
+
+            csnd.Csound raw = new csnd.Csound(csound.getCsound());
+            for (int i = 0; i < MAX_TOUCHES; i++) {
+                touchXPtr[i] = new CsoundMYFLTArray();
+                raw.GetChannelPtr(touchXPtr[i].GetPtr(), "touch." + i + ".x", inputControl);
+                touchYPtr[i] = new CsoundMYFLTArray();
+                raw.GetChannelPtr(touchYPtr[i].GetPtr(), "touch." + i + ".y", inputControl);
+            }
+            sizePtr = new CsoundMYFLTArray();
+            raw.GetChannelPtr(sizePtr.GetPtr(), "size", outputControl);
         } catch (Exception t) {
             Log.e(TAG, "Failed to start Csound", t);
             csound = null;

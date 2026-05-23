@@ -22,3 +22,7 @@ captures/
 # Old Eclipse era leftovers
 release-key.keystore
 sign.sh
+
+# Local reference material — decompiled original APK, kept for diffing
+# but never built or shipped.
+legacy/

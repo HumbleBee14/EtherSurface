@@ -18,70 +18,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.7
 
-      - name: Show Environment
-        run: |
-          echo "=== System Info ==="
-          uname -a
-          sw_vers
-          echo ""
-          echo "=== Xcode Info ==="
-          which xcodebuild
-          xcode-select -p
-          echo ""
-          echo "=== Available Xcode ==="
-          ls -la /Applications | grep -i xcode
-          echo ""
-          echo "=== Xcode Version ==="
-          /usr/bin/xcode-select -p || true
-
-      - name: Set Xcode Path
+      - name: Setup Xcode
         run: |
           sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
-          echo "XCODE_PATH=$(/usr/bin/xcode-select -p)"
 
-      - name: List Project Structure
+      - name: Build
+        working-directory: EtherSurface-iOS
         run: |
-          cd EtherSurface-iOS
-          echo "=== Project Files ==="
-          ls -la
-          echo ""
-          echo "=== Etherpad Folder ==="
-          ls -la Etherpad/
-          echo ""
-          echo "=== Checking for Dependencies ==="
-          if [ -f "Podfile" ]; then
-            echo "Podfile found"
-            cat Podfile
-          else
-            echo "No Podfile"
-          fi
-
-      - name: Show Xcodebuild Info
-        run: |
-          cd EtherSurface-iOS
-          echo "=== Build Settings ==="
-          xcodebuild -project Etherpad.xcodeproj -scheme Etherpad -showBuildSettings 2>&1 | head -50
-
-      - name: Attempt Build
-        run: |
-          cd EtherSurface-iOS
-          echo "=== Starting Build ==="
-          set -o pipefail
           xcodebuild \
             -project Etherpad.xcodeproj \
             -scheme Etherpad \
             -configuration Release \
             -derivedDataPath build/DerivedData \
             build \
-            CODE_SIGNING_ALLOWED=NO \
-            2>&1 | head -200
-          echo "Build exit code: $?"
-
-      - name: Upload Raw Output
-        if: always()
-        uses: actions/upload-artifact@v4.3.6
-        with:
-          name: workflow-output
-          path: .
-          retention-days: 1
+            CODE_SIGNING_ALLOWED=NO

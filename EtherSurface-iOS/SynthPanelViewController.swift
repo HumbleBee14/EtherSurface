@@ -103,12 +103,14 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
         // Clip so toolbar can't overflow this panel's bounds in split mode.
         view.clipsToBounds = true
 
-        let effect: UIVisualEffect
-        if #available(iOS 26.0, *) {
-            effect = UIGlassEffect()
-        } else {
-            effect = UIBlurEffect(style: .systemThinMaterial)
-        }
+        // Resolve UIGlassEffect dynamically so this builds against older SDKs.
+        let effect: UIVisualEffect = {
+            if let cls = NSClassFromString("UIGlassEffect") as? NSObject.Type,
+               let obj = cls.init() as? UIVisualEffect {
+                return obj
+            }
+            return UIBlurEffect(style: .systemThinMaterial)
+        }()
         let bar = UIVisualEffectView(effect: effect)
         bar.clipsToBounds = true
         bar.translatesAutoresizingMaskIntoConstraints = false

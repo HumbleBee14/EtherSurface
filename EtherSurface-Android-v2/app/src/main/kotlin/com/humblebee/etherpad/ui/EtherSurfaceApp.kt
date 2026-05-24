@@ -1,10 +1,7 @@
 package com.humblebee.etherpad.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
@@ -35,11 +32,7 @@ internal fun EtherSurfaceApp(synth: Synth) {
 
     MaterialTheme(colorScheme = darkColorScheme(background = EtherColors.Background)) {
         Surface(modifier = Modifier.fillMaxSize(), color = EtherColors.Background) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .windowInsetsPadding(WindowInsets.systemBars),
-            ) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 TopMenuBar(synth, touchState, onAboutClick = { showAbout = true })
                 TouchSurface(synth, touchState, effects, modifier = Modifier.fillMaxSize())
             }

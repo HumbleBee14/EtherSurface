@@ -26,17 +26,12 @@ import com.humblebee.etherpad.engine.Synth
 import com.humblebee.etherpad.synth.Presets
 
 /**
- * Top action bar with five parameter buttons. Each button opens a single-
- * choice [ChoiceDialog] populated from [Presets]; the current selection is
- * shown by the dialog's radio button (mirrors the iOS UIMenu checkmark).
- *
- * Selection state lives entirely in this composable's local `remember`
- * blocks — no need for a ViewModel because the engine itself is the
- * source of truth for everything except the UI's current pick.
+ * Top action bar. Each parameter button (Octave / Scale / Key / Size / Sound)
+ * is wrapped in its own [Box] so a [ChoiceDropdown] can anchor directly
+ * beneath the button.
  */
 @Composable
 internal fun TopMenuBar(synth: Synth, touchState: TouchState, onAboutClick: () -> Unit) {
-    // Defaults mirror the .csd's instr 100/101/102/103/104 init values.
     var sizeIdx   by remember { mutableIntStateOf(Presets.DefaultSizeIdx) }
     var keyIdx    by remember { mutableIntStateOf(Presets.DefaultKeyIdx) }
     var octaveIdx by remember { mutableIntStateOf(Presets.DefaultOctaveIdx) }
@@ -53,57 +48,117 @@ internal fun TopMenuBar(synth: Synth, touchState: TouchState, onAboutClick: () -
             .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        MenuButton("Octave") { openMenu = "octave" }
+        DropdownButton(
+            label = "Octave",
+            expanded = openMenu == "octave",
+            options = Presets.OctaveLabels,
+            selected = octaveIdx,
+            defaultIdx = Presets.DefaultOctaveIdx,
+            onOpen = { openMenu = "octave" },
+            onDismiss = { openMenu = null },
+            onPick = { idx ->
+                octaveIdx = idx
+                synth.setOctave(Presets.OctaveValues[idx])
+                openMenu = null
+            },
+        )
         Spacer(Modifier.padding(start = 20.dp))
-        MenuButton("Scale")  { openMenu = "scale" }
+        DropdownButton(
+            label = "Scale",
+            expanded = openMenu == "scale",
+            options = Presets.ScaleLabels,
+            selected = scaleIdx,
+            defaultIdx = Presets.DefaultScaleIdx,
+            onOpen = { openMenu = "scale" },
+            onDismiss = { openMenu = null },
+            onPick = { idx ->
+                scaleIdx = idx
+                synth.setScale(Presets.ScaleSteps[idx])
+                openMenu = null
+            },
+        )
         Spacer(Modifier.padding(start = 20.dp))
-        MenuButton("Key")    { openMenu = "key" }
+        DropdownButton(
+            label = "Key",
+            expanded = openMenu == "key",
+            options = Presets.KeyLabels,
+            selected = keyIdx,
+            defaultIdx = Presets.DefaultKeyIdx,
+            onOpen = { openMenu = "key" },
+            onDismiss = { openMenu = null },
+            onPick = { idx ->
+                keyIdx = idx
+                synth.setKey(idx)
+                openMenu = null
+            },
+        )
         Spacer(Modifier.padding(start = 20.dp))
-        MenuButton("Size")   { openMenu = "size" }
+        DropdownButton(
+            label = "Size",
+            expanded = openMenu == "size",
+            options = Presets.SizeLabels,
+            selected = sizeIdx,
+            defaultIdx = Presets.DefaultSizeIdx,
+            onOpen = { openMenu = "size" },
+            onDismiss = { openMenu = null },
+            onPick = { idx ->
+                sizeIdx = idx
+                val n = idx + 4
+                touchState.numberOfNotes.intValue = n
+                synth.setSize(n)
+                openMenu = null
+            },
+        )
         Spacer(Modifier.padding(start = 20.dp))
-        MenuButton("Sound")  { openMenu = "sound" }
+        DropdownButton(
+            label = "Sound",
+            expanded = openMenu == "sound",
+            options = Presets.SoundLabels,
+            selected = soundIdx,
+            defaultIdx = Presets.DefaultSoundIdx,
+            onOpen = { openMenu = "sound" },
+            onDismiss = { openMenu = null },
+            onPick = { idx ->
+                soundIdx = idx
+                synth.setSound(idx)
+                openMenu = null
+            },
+        )
         Spacer(Modifier.padding(start = 20.dp))
-        MenuButton("About")  { onAboutClick() }
-    }
-
-    when (openMenu) {
-        "octave" -> ChoiceDialog("Octave", Presets.OctaveLabels, octaveIdx,
-            onDismiss = { openMenu = null }) { idx ->
-            octaveIdx = idx
-            synth.setOctave(Presets.OctaveValues[idx])
-            openMenu = null
-        }
-        "scale" -> ChoiceDialog("Scale", Presets.ScaleLabels, scaleIdx,
-            onDismiss = { openMenu = null }) { idx ->
-            scaleIdx = idx
-            synth.setScale(Presets.ScaleSteps[idx])
-            openMenu = null
-        }
-        "key" -> ChoiceDialog("Key", Presets.KeyLabels, keyIdx,
-            onDismiss = { openMenu = null }) { idx ->
-            keyIdx = idx
-            synth.setKey(idx)
-            openMenu = null
-        }
-        "size" -> ChoiceDialog("Size", Presets.SizeLabels, sizeIdx,
-            onDismiss = { openMenu = null }) { idx ->
-            sizeIdx = idx
-            val n = idx + 4
-            touchState.numberOfNotes.intValue = n
-            synth.setSize(n)
-            openMenu = null
-        }
-        "sound" -> ChoiceDialog("Sound", Presets.SoundLabels, soundIdx,
-            onDismiss = { openMenu = null }) { idx ->
-            soundIdx = idx
-            synth.setSound(idx)
-            openMenu = null
-        }
+        MenuButton("About", onClick = onAboutClick)
     }
 }
 
-/** Single top-bar entry. Plain text button on the dark grey background; the
- *  click opens its matching dialog. */
+/**
+ * A menu-bar entry that owns its own dropdown. The [ChoiceDropdown] is
+ * placed inside the same [Box] as the button so it anchors directly under
+ * the label, just like the original 2014 dropdowns.
+ */
+@Composable
+private fun DropdownButton(
+    label: String,
+    expanded: Boolean,
+    options: Array<String>,
+    selected: Int,
+    defaultIdx: Int,
+    onOpen: () -> Unit,
+    onDismiss: () -> Unit,
+    onPick: (Int) -> Unit,
+) {
+    Box {
+        MenuButton(label, onClick = onOpen)
+        ChoiceDropdown(
+            expanded = expanded,
+            options = options,
+            selected = selected,
+            defaultIdx = defaultIdx,
+            onDismiss = onDismiss,
+            onPick = onPick,
+        )
+    }
+}
+
+/** Single top-bar entry. Plain text button on the dark grey background. */
 @Composable
 private fun MenuButton(label: String, onClick: () -> Unit) {
     Box(

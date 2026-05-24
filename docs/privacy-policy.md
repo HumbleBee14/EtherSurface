@@ -55,4 +55,4 @@ If you have any questions about this Privacy Policy, contact:
 
 ---
 
-*This privacy policy is provided for the Etherpad iOS application available on the Apple App Store.*
+*This privacy policy applies to the Etherpad application available on the Apple App Store and Google Play Store.*

@@ -1,6 +1,5 @@
 package com.humblebee.etherpad.ui
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
@@ -23,7 +22,6 @@ import androidx.compose.ui.platform.LocalDensity
 import com.humblebee.etherpad.engine.Synth
 import com.humblebee.etherpad.synth.Presets
 
-private const val TAG = "EtherUI"
 
 private const val RIPPLE_DURATION_S    = 0.8f
 private const val RIPPLE_MAX_RADIUS_DP = 220f
@@ -121,7 +119,6 @@ internal fun TouchSurface(
                                     if (VisualEffect.Trail in effects) {
                                         state.trails[slot] = mutableListOf(TrailPoint(change.position, now))
                                     }
-                                    Log.d(TAG, "down slot=$slot x=$x y=$y")
                                 }
                             } else if (wasDown && isDown) {
                                 // touch-move: same slot, new position
@@ -138,7 +135,6 @@ internal fun TouchSurface(
                                 val slot = slots.remove(id)!!
                                 synth.touchUp(slot)
                                 state.live.remove(slot)
-                                Log.d(TAG, "up slot=$slot")
                             }
                             change.consume()
                         }

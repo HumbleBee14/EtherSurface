@@ -15,7 +15,7 @@ env:
 jobs:
   build:
     name: Build iOS App
-    runs-on: macos-latest
+    runs-on: macos-15  # arm64; libsndfile.a in repo is arm64-only
 
     steps:
       - name: Checkout

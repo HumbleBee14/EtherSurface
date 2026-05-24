@@ -1,23 +1,23 @@
-// EtherpadViewController.swift — main view controller
+// SynthPanelViewController.swift — one independent synth panel (engine + surface + toolbar)
 //
-// Faithful port of MainActivity.java: full-screen touch surface with a
-// toolbar row of five popup menus (Scale, Key, Octave, Size, Sound, About).
-// Every option, every scale array, every Csound score message is identical
-// to the Android version.
+// A reusable view controller that owns one CsoundEngine, one TouchSurfaceView, and one
+// toolbar with five control buttons (Scale, Key, Octave, Size, Sound). Used twice in
+// SplitSynthViewController (left and right panels on iPad) or once in SceneDelegate
+// (full-screen on iPhone / split mode OFF on iPad).
+//
+// Each panel maintains its own parameter state independently.
 
 import UIKit
 import AVFoundation
 
-final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
+final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
 
-    // MARK: - Sub-components
+    // MARK: - Components
 
     private let engine  = CsoundEngine()
     private let surface = TouchSurfaceView()
 
-    // MARK: - Toolbar buttons (kept so we can refresh their menus when
-    // selection changes — UIMenu is immutable, so to update the
-    // checkmark we have to rebuild and reassign the whole menu.)
+    // MARK: - Toolbar buttons
 
     private var scaleBtn:  UIBarButtonItem!
     private var keyBtn:    UIBarButtonItem!
@@ -25,15 +25,15 @@ final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
     private var sizeBtn:   UIBarButtonItem!
     private var soundBtn:  UIBarButtonItem!
 
-    // MARK: - Current selections (mirror the CSD's init defaults)
+    // MARK: - State (mirrors CSD defaults)
 
-    private var selectedScale:  String = "Default"          // matches scaleDefault + giscale_type=0
-    private var selectedKey:    Int    = 0                  // C
-    private var selectedOctave: Int    = 4                  // 0 (middle) — Csound value 4
-    private var selectedSize:   Int    = 8                  // matches gisize init 8
-    private var selectedSound:  Int    = 0                  // Ether Pad
+    private var selectedScale:  String = "Default"
+    private var selectedKey:    Int    = 0
+    private var selectedOctave: Int    = 4
+    private var selectedSize:   Int    = 8
+    private var selectedSound:  Int    = 0
 
-    // MARK: - Scales (exact copies from MainActivity.java)
+    // MARK: - Scales
 
     private let scaleMajor:   [Int] = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23]
     private let scaleMinor:   [Int] = [0, 2, 3, 5, 7, 8, 11, 12, 14, 15, 17, 19, 20, 23]
@@ -45,20 +45,13 @@ final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
     private let scaleFlam:    [Int] = [0, 1, 4, 5, 7, 8, 11, 12, 13, 16, 17, 19, 21, 22]
     private let scaleDefault: [Int] = [0, 2, 4, 7, 9, 11, 12, 14, 16, 19, 21, 24, 26, 28]
     private let scaleBP:      [Int] = [-1]
-    // Overtone series use giscale_type 2 and 3 in the CSD
-    private let scaleOTLow:   [Int] = [-2]  // sentinel: giscale_type = 2
-    private let scaleOTHigh:  [Int] = [-3]  // sentinel: giscale_type = 3
+    private let scaleOTLow:   [Int] = [-2]
+    private let scaleOTHigh:  [Int] = [-3]
 
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Audio session is configured in SceneDelegate for iPad (SplitSynthViewController)
-        // or here for iPhone. Configure only if not already done (for iPhone entry point).
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            configureAudioSession()
-        }
 
         surface.delegate = self
         surface.translatesAutoresizingMaskIntoConstraints = false
@@ -81,52 +74,14 @@ final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
             name: AVAudioSession.interruptionNotification, object: nil)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-
     override var prefersStatusBarHidden: Bool { true }
     override var prefersHomeIndicatorAutoHidden: Bool { true }
-
-    // Edge touches belong to the synth, not the system swipe-up gestures.
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
         engine.allNotesOff()
         engine.stop()
-    }
-
-    // MARK: - Audio session
-
-    private func configureAudioSession() {
-        do {
-            let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
-            try session.setPreferredIOBufferDuration(0.005)  // ~5 ms
-            try session.setActive(true)
-        } catch {
-            print("[Etherpad] Audio session setup failed: \(error)")
-        }
-    }
-
-    @objc private func appWillResignActive() {
-        surface.cancelAllTouches()
-        engine.allNotesOff()
-    }
-
-    @objc private func handleInterruption(_ notification: Notification) {
-        guard let info = notification.userInfo,
-              let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
-              let type = AVAudioSession.InterruptionType(rawValue: typeValue)
-        else { return }
-
-        if type == .began {
-            surface.cancelAllTouches()
-            engine.allNotesOff()
-        }
-        // On .ended, AVAudioSession resumes automatically for .playback category.
     }
 
     // MARK: - TouchSurfaceDelegate
@@ -143,7 +98,26 @@ final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
         engine.noteOff(slot: slot)
     }
 
-    // MARK: - Toolbar (mirrors Android ActionBar with 5 popup buttons + About)
+    // MARK: - Lifecycle notifications
+
+    @objc private func appWillResignActive() {
+        surface.cancelAllTouches()
+        engine.allNotesOff()
+    }
+
+    @objc private func handleInterruption(_ notification: Notification) {
+        guard let info = notification.userInfo,
+              let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue)
+        else { return }
+
+        if type == .began {
+            surface.cancelAllTouches()
+            engine.allNotesOff()
+        }
+    }
+
+    // MARK: - Toolbar
 
     private func configureToolbar() {
         let toolbar = UIToolbar()
@@ -167,32 +141,17 @@ final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
         octBtn    = UIBarButtonItem(title: "Octave", menu: buildOctaveMenu())
         sizeBtn   = UIBarButtonItem(title: "Size",   menu: buildSizeMenu())
         soundBtn  = UIBarButtonItem(title: "Sound",  menu: buildSoundMenu())
-        let aboutBtn = UIBarButtonItem(title: "About", style: .plain, target: self,
-                                       action: #selector(showAbout))
 
-        toolbar.items = [scaleBtn, flex, keyBtn, flex, octBtn, flex, sizeBtn, flex, soundBtn, flex, aboutBtn]
+        toolbar.items = [scaleBtn, flex, keyBtn, flex, octBtn, flex, sizeBtn, flex, soundBtn]
     }
 
-    /// Build a UIAction with a checkmark when `isSelected` is true.
-    /// If `isDefault`, prepend a small bullet so the user can identify
-    /// the CSD's original default value at a glance. (UIAction titles
-    /// are plain strings; iOS does not render attributed-string underlines
-    /// inside UIMenu rows, so a leading glyph is the cleanest equivalent.)
     private func makeAction(title: String, isSelected: Bool, isDefault: Bool = false,
                             handler: @escaping () -> Void) -> UIAction {
         let displayTitle = isDefault ? "• \(title)" : title
         return UIAction(title: displayTitle, state: isSelected ? .on : .off) { _ in handler() }
     }
 
-    // MARK: - Menus
-    //
-    // Each menu shows a checkmark next to the currently selected option.
-    // After a selection, we update the stored state, push the value to
-    // Csound, refresh the button title to show the choice inline (e.g.
-    // "Scale: Major"), and rebuild the menu so the checkmark moves to
-    // the new row.
-
-    // Scale (12 items — exact match of scales.xml)
+    // MARK: - Menu builders
 
     private struct ScaleOption {
         let name: String
@@ -231,8 +190,6 @@ final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
         return UIMenu(title: "Scale", children: actions)
     }
 
-    // Key (C through B — 12 chromatic roots)
-
     private let keyNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
     private func buildKeyMenu() -> UIMenu {
@@ -247,8 +204,6 @@ final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
         }
         return UIMenu(title: "Key", children: actions)
     }
-
-    // Octave (labels 2..-2 → Csound values 6..2)
 
     private let octaveLabels = ["2", "1", "0", "-1", "-2"]
     private let octaveValues = [6, 5, 4, 3, 2]
@@ -266,8 +221,6 @@ final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
         return UIMenu(title: "Octave", children: actions)
     }
 
-    // Size (4 through 14)
-
     private func buildSizeMenu() -> UIMenu {
         let actions = (4...14).map { n in
             makeAction(title: "\(n)", isSelected: n == selectedSize, isDefault: n == 8) { [weak self] in
@@ -282,8 +235,6 @@ final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
         return UIMenu(title: "Size", children: actions)
     }
 
-    // Sound (5 sounds — exact match of sounds.xml)
-
     private let soundNames = ["Ether Pad", "Distorted Dreams", "Xanpalamin", "Give it a Tri", "Digital Monk"]
 
     private func buildSoundMenu() -> UIMenu {
@@ -297,13 +248,5 @@ final class EtherpadViewController: UIViewController, TouchSurfaceDelegate {
             }
         }
         return UIMenu(title: "Sound", children: actions)
-    }
-
-    // MARK: - About
-
-    @objc private func showAbout() {
-        let aboutVC = AboutViewController()
-        aboutVC.modalPresentationStyle = .pageSheet
-        present(aboutVC, animated: true)
     }
 }

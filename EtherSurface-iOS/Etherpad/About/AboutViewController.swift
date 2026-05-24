@@ -63,6 +63,21 @@ final class AboutViewController: UIViewController {
 
         stack.addArrangedSubview(makeSpacer(20))
 
+        // iPad split-mode toggle (iPad only)
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            let splitHeader = UILabel()
+            splitHeader.text = "Split Mode"
+            splitHeader.font = .systemFont(ofSize: 15, weight: .semibold)
+            splitHeader.textColor = textColor
+            splitHeader.textAlignment = .center
+            stack.addArrangedSubview(splitHeader)
+
+            let splitToggle = makeSplitModeToggle()
+            stack.addArrangedSubview(splitToggle)
+
+            stack.addArrangedSubview(makeSpacer(20))
+        }
+
         // Performance tip
         let tip = UILabel()
         tip.text = "Tip: for live performance, enable Guided Access (Settings → Accessibility) to disable system gestures."
@@ -245,6 +260,41 @@ final class AboutViewController: UIViewController {
             var cfg = btn.configuration
             cfg?.attributedTitle = chipAttributed(label: label, isOn: isChipOn(effect))
             btn.configuration = cfg
+        }
+    }
+
+    // MARK: - Split-mode toggle (iPad only)
+
+    private func makeSplitModeToggle() -> UIView {
+        let container = UIStackView()
+        container.axis = .horizontal
+        container.spacing = 12
+        container.alignment = .center
+
+        let toggle = UISwitch()
+        toggle.isOn = SplitModeController.isEnabled
+        toggle.addTarget(self, action: #selector(splitModeToggled(_:)), for: .valueChanged)
+        container.addArrangedSubview(toggle)
+
+        let label = UILabel()
+        label.text = SplitModeController.isEnabled ? "Enabled" : "Disabled"
+        label.font = .systemFont(ofSize: 14)
+        label.textColor = subtleColor
+        label.tag = 999  // Tag so we can find and update it
+        container.addArrangedSubview(label)
+
+        container.addArrangedSubview(UIView())  // Spacer
+
+        return container
+    }
+
+    @objc private func splitModeToggled(_ sender: UISwitch) {
+        SplitModeController.isEnabled = sender.isOn
+
+        // Update the label next to the toggle
+        if let stack = sender.superview as? UIStackView,
+           let label = stack.viewWithTag(999) as? UILabel {
+            label.text = sender.isOn ? "Enabled" : "Disabled"
         }
     }
 }

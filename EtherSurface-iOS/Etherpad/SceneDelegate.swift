@@ -19,7 +19,15 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = EtherpadViewController()
+
+        let rootVC: UIViewController
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            rootVC = SplitSynthViewController()
+        } else {
+            rootVC = EtherpadViewController()
+        }
+
+        window.rootViewController = rootVC
         window.makeKeyAndVisible()
         self.window = window
     }

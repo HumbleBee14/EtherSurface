@@ -1,10 +1,3 @@
-// AboutViewController.swift — Etherpad About sheet.
-//
-// Native UIKit (UILabel / UITextView / UIImageView) — no WKWebView, so
-// none of the WebContent / browser-engine-entitlement noise in the
-// console. Renders title, developer credit, original-author credit
-// for Paul Batchelor's Android version, and a tappable link.
-
 import UIKit
 
 final class AboutViewController: UIViewController {
@@ -25,92 +18,125 @@ final class AboutViewController: UIViewController {
 
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.alignment = .center
-        stack.spacing = 14
+        stack.alignment = .fill
+        stack.spacing = 10
         stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.layoutMargins = UIEdgeInsets(top: 40, left: 28, bottom: 40, right: 28)
+        stack.layoutMargins = UIEdgeInsets(top: 18, left: 18, bottom: 18, right: 18)
         stack.isLayoutMarginsRelativeArrangement = true
         scroll.addSubview(stack)
 
-        // Title
         let title = UILabel()
         title.text = "Etherpad"
-        title.font = .systemFont(ofSize: 36, weight: .bold)
+        title.font = .systemFont(ofSize: 22, weight: .bold)
         title.textColor = textColor
         title.textAlignment = .center
         stack.addArrangedSubview(title)
 
-        // Tagline
         let tagline = UILabel()
         tagline.text = "A multi-touch synth for iPhone and iPad"
-        tagline.font = .systemFont(ofSize: 16)
+        tagline.font = .systemFont(ofSize: 13)
         tagline.textColor = textColor
         tagline.textAlignment = .center
         tagline.numberOfLines = 0
         stack.addArrangedSubview(tagline)
 
-        stack.addArrangedSubview(makeSpacer(16))
+        stack.addArrangedSubview(makeSpacer(8))
 
-        // Visualizations
+        let visHeaderRow = UIStackView()
+        visHeaderRow.axis = .horizontal
+        visHeaderRow.alignment = .center
+        visHeaderRow.spacing = 12
+
         let visHeader = UILabel()
         visHeader.text = "Visualizations"
         visHeader.font = .systemFont(ofSize: 15, weight: .semibold)
         visHeader.textColor = textColor
-        visHeader.textAlignment = .center
-        stack.addArrangedSubview(visHeader)
+        visHeaderRow.addArrangedSubview(visHeader)
 
-        stack.addArrangedSubview(makeEffectGrid())
+        visHeaderRow.addArrangedSubview(UIView())
 
-        stack.addArrangedSubview(makeSpacer(20))
+        let visToggle = UISwitch()
+        visToggle.isOn = !VisualEffects.current.isEmpty
+        visToggle.addTarget(self, action: #selector(visualizationsMasterToggled(_:)),
+                            for: .valueChanged)
+        visHeaderRow.addArrangedSubview(visToggle)
 
-        // Split-mode toggle (available on all devices)
+        let headerContainer = UIView()
+        headerContainer.translatesAutoresizingMaskIntoConstraints = false
+        visHeaderRow.translatesAutoresizingMaskIntoConstraints = false
+        headerContainer.addSubview(visHeaderRow)
+        NSLayoutConstraint.activate([
+            visHeaderRow.topAnchor.constraint(equalTo: headerContainer.topAnchor),
+            visHeaderRow.bottomAnchor.constraint(equalTo: headerContainer.bottomAnchor),
+            visHeaderRow.leadingAnchor.constraint(equalTo: headerContainer.leadingAnchor, constant: 16),
+            visHeaderRow.trailingAnchor.constraint(equalTo: headerContainer.trailingAnchor, constant: -16),
+        ])
+        stack.addArrangedSubview(headerContainer)
+
+        let grid = makeEffectGrid()
+        effectGridView = grid
+        grid.isHidden = !visToggle.isOn
+        stack.addArrangedSubview(grid)
+
+        stack.addArrangedSubview(makeSpacer(12))
+
+        let splitRow = UIStackView()
+        splitRow.axis = .horizontal
+        splitRow.alignment = .center
+        splitRow.spacing = 12
+
         let splitHeader = UILabel()
         splitHeader.text = "Split Mode"
         splitHeader.font = .systemFont(ofSize: 15, weight: .semibold)
         splitHeader.textColor = textColor
-        splitHeader.textAlignment = .center
-        stack.addArrangedSubview(splitHeader)
+        splitRow.addArrangedSubview(splitHeader)
 
-        let splitToggle = makeSplitModeToggle()
-        stack.addArrangedSubview(splitToggle)
+        splitRow.addArrangedSubview(UIView())
 
-        stack.addArrangedSubview(makeSpacer(20))
+        let splitToggle = UISwitch()
+        splitToggle.isOn = SplitModeController.isEnabled
+        splitToggle.addTarget(self, action: #selector(splitModeToggled(_:)), for: .valueChanged)
+        splitRow.addArrangedSubview(splitToggle)
 
-        // Performance tip
-        let tip = UILabel()
-        tip.text = "Tip: for live performance, enable Guided Access (Settings → Accessibility) to disable system gestures."
-        tip.font = .italicSystemFont(ofSize: 13)
-        tip.textColor = subtleColor
-        tip.textAlignment = .center
-        tip.numberOfLines = 0
-        stack.addArrangedSubview(tip)
+        let splitContainer = UIView()
+        splitContainer.translatesAutoresizingMaskIntoConstraints = false
+        splitRow.translatesAutoresizingMaskIntoConstraints = false
+        splitContainer.addSubview(splitRow)
+        NSLayoutConstraint.activate([
+            splitRow.topAnchor.constraint(equalTo: splitContainer.topAnchor),
+            splitRow.bottomAnchor.constraint(equalTo: splitContainer.bottomAnchor),
+            splitRow.leadingAnchor.constraint(equalTo: splitContainer.leadingAnchor, constant: 16),
+            splitRow.trailingAnchor.constraint(equalTo: splitContainer.trailingAnchor, constant: -16),
+        ])
+        stack.addArrangedSubview(splitContainer)
 
         stack.addArrangedSubview(makeSpacer(12))
 
-        // Developer credit
-        let devLabel = UILabel()
-        devLabel.text = "iOS app by Dinesh"
-        devLabel.font = .systemFont(ofSize: 17, weight: .semibold)
-        devLabel.textColor = textColor
-        devLabel.textAlignment = .center
-        stack.addArrangedSubview(devLabel)
-
-        // Personal site link
         stack.addArrangedSubview(makeLinkView(
-            leading: "",
+            leading: "Developer: Dinesh (",
             linkText: "dineshy.com",
-            url: URL(string: "https://dineshy.com")!))
+            url: URL(string: "https://dineshy.com")!,
+            trailing: ")"))
 
-        // One-line credit to the original Android author.
         let creditLabel = UILabel()
-        creditLabel.text = "Inspired by the original EtherSurface by Paul Batchelor."
+        creditLabel.text = "Credits: Inspired by Paul Batchelor's EtherSurface Android app."
         creditLabel.font = .italicSystemFont(ofSize: 13)
         creditLabel.textColor = subtleColor
-        creditLabel.textAlignment = .center
+        creditLabel.textAlignment = .left
         creditLabel.numberOfLines = 0
-        stack.addArrangedSubview(creditLabel)
 
-        // Logo
+        let creditContainer = UIView()
+        creditContainer.translatesAutoresizingMaskIntoConstraints = false
+        creditLabel.translatesAutoresizingMaskIntoConstraints = false
+        creditContainer.addSubview(creditLabel)
+        NSLayoutConstraint.activate([
+            creditLabel.topAnchor.constraint(equalTo: creditContainer.topAnchor),
+            creditLabel.bottomAnchor.constraint(equalTo: creditContainer.bottomAnchor),
+            creditLabel.leadingAnchor.constraint(equalTo: creditContainer.leadingAnchor, constant: 16),
+            creditLabel.trailingAnchor.constraint(equalTo: creditContainer.trailingAnchor, constant: -16),
+        ])
+        stack.addArrangedSubview(creditContainer)
+
         if let logo = UIImage(named: "logo_shadow") ?? UIImage(named: "logo") {
             stack.addArrangedSubview(makeSpacer(20))
             let iv = UIImageView(image: logo)
@@ -133,7 +159,7 @@ final class AboutViewController: UIViewController {
             stack.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor),
         ])
 
-        // Close button
+
         let closeBtn = UIButton(type: .close)
         closeBtn.translatesAutoresizingMaskIntoConstraints = false
         closeBtn.addTarget(self, action: #selector(dismissSelf), for: .touchUpInside)
@@ -144,26 +170,30 @@ final class AboutViewController: UIViewController {
         ])
     }
 
-    /// Centred paragraph with a single tappable link.
-    private func makeLinkView(leading: String, linkText: String, url: URL) -> UITextView {
+    private func makeLinkView(leading: String, linkText: String, url: URL,
+                              trailing: String = "") -> UITextView {
         let tv = UITextView()
         tv.isEditable = false
         tv.isScrollEnabled = false
         tv.backgroundColor = .clear
-        tv.textContainerInset = .zero
+        tv.textContainerInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tv.textContainer.lineFragmentPadding = 0
         tv.dataDetectorTypes = []
-        tv.textAlignment = .center
+        tv.textAlignment = .left
 
-        let attr = NSMutableAttributedString(string: leading, attributes: [
-            .font: UIFont.systemFont(ofSize: 15),
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 14),
             .foregroundColor: textColor,
-        ])
+        ]
+        let attr = NSMutableAttributedString(string: leading, attributes: attrs)
         attr.append(NSAttributedString(string: linkText, attributes: [
-            .font: UIFont.systemFont(ofSize: 15),
+            .font: UIFont.systemFont(ofSize: 14),
             .foregroundColor: linkColor,
             .link: url,
         ]))
+        if !trailing.isEmpty {
+            attr.append(NSAttributedString(string: trailing, attributes: attrs))
+        }
         tv.attributedText = attr
         tv.linkTextAttributes = [.foregroundColor: linkColor]
         return tv
@@ -180,48 +210,70 @@ final class AboutViewController: UIViewController {
         dismiss(animated: true)
     }
 
-    // MARK: - Visualization chips
-
     private var chips: [(UIButton, VisualEffects)] = []
+    private weak var effectGridView: UIView?
 
     private func makeEffectGrid() -> UIView {
         chips.removeAll()
-        let items: [(String, VisualEffects)] = [("None", .none)]
-            + VisualEffects.all.map { ($0.label, $0) }
+        let items: [(String, VisualEffects)] = VisualEffects.all.map { ($0.label, $0) }
 
-        let cols = 3
+        let cols = 2
         let outer = UIStackView()
         outer.axis = .vertical
-        outer.alignment = .center
-        outer.spacing = 8
+        outer.alignment = .fill
+        outer.distribution = .fillEqually
+        outer.spacing = 10
 
         var row: UIStackView?
         for (i, item) in items.enumerated() {
             if i % cols == 0 {
                 row = UIStackView()
                 row!.axis = .horizontal
-                row!.spacing = 8
-                row!.alignment = .center
+                row!.spacing = 10
+                row!.alignment = .fill
+                row!.distribution = .fillEqually
                 outer.addArrangedSubview(row!)
             }
             let chip = makeChip(label: item.0, effect: item.1)
             row!.addArrangedSubview(chip)
             chips.append((chip, item.1))
         }
-        return outer
+
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        outer.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(outer)
+        NSLayoutConstraint.activate([
+            outer.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
+            outer.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8),
+            outer.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            outer.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+        ])
+        return container
     }
 
     private func makeChip(label: String, effect: VisualEffects) -> UIButton {
-        var cfg = UIButton.Configuration.plain()
-        cfg.attributedTitle = chipAttributed(label: label, isOn: isChipOn(effect))
-        cfg.baseForegroundColor = textColor
-        cfg.background.cornerRadius = 10
-        cfg.background.backgroundColor = UIColor.white.withAlphaComponent(0.06)
-        cfg.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14)
-        let btn = UIButton(configuration: cfg, primaryAction: UIAction { [weak self] _ in
-            self?.toggle(effect)
-        })
+        let btn = UIButton(type: .custom)
+        btn.setTitle(label, for: .normal)
+        btn.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
+        btn.titleLabel?.numberOfLines = 2
+        btn.titleLabel?.textAlignment = .center
+        btn.titleLabel?.lineBreakMode = .byWordWrapping
+        btn.layer.cornerRadius = 10
+        btn.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        btn.addAction(UIAction { [weak self] _ in self?.toggle(effect) }, for: .touchUpInside)
+        applyChipStyle(btn, isOn: isChipOn(effect))
         return btn
+    }
+
+    private func applyChipStyle(_ btn: UIButton, isOn: Bool) {
+        if isOn {
+            btn.backgroundColor = linkColor
+            btn.setTitleColor(bgColor, for: .normal)
+        } else {
+            btn.backgroundColor = UIColor.white.withAlphaComponent(0.06)
+            btn.setTitleColor(textColor, for: .normal)
+        }
     }
 
     private func isChipOn(_ effect: VisualEffects) -> Bool {
@@ -229,70 +281,33 @@ final class AboutViewController: UIViewController {
                              : VisualEffects.current.contains(effect)
     }
 
-    /// Bigger checkbox glyph + smaller label text, side-by-side in one
-    /// attributed string so the box and label share a single tap target.
-    private func chipAttributed(label: String, isOn: Bool) -> AttributedString {
-        var box = AttributedString(isOn ? "☑ " : "☐ ")
-        box.font = .systemFont(ofSize: 22)
-        box.foregroundColor = textColor
-        var name = AttributedString(label)
-        name.font = .systemFont(ofSize: 14)
-        name.foregroundColor = textColor
-        return box + name
+    private func toggle(_ effect: VisualEffects) {
+        var cur = VisualEffects.current
+        if cur.contains(effect) { cur.remove(effect) } else { cur.insert(effect) }
+        VisualEffects.current = cur
+        refreshChips()
     }
 
-    private func toggle(_ effect: VisualEffects) {
-        if effect.rawValue == 0 {
-            VisualEffects.current = .none
+    @objc private func visualizationsMasterToggled(_ sender: UISwitch) {
+        if sender.isOn {
+            if VisualEffects.current.isEmpty {
+                VisualEffects.current = [.ripple]
+                refreshChips()
+            }
         } else {
-            var cur = VisualEffects.current
-            if cur.contains(effect) { cur.remove(effect) } else { cur.insert(effect) }
-            VisualEffects.current = cur
+            VisualEffects.current = .none
+            refreshChips()
         }
-        refreshChips()
+        effectGridView?.isHidden = !sender.isOn
     }
 
     private func refreshChips() {
         for (btn, effect) in chips {
-            let label = effect.rawValue == 0 ? "None" : effect.label
-            var cfg = btn.configuration
-            cfg?.attributedTitle = chipAttributed(label: label, isOn: isChipOn(effect))
-            btn.configuration = cfg
+            applyChipStyle(btn, isOn: isChipOn(effect))
         }
-    }
-
-    // MARK: - Split-mode toggle (iPad only)
-
-    private func makeSplitModeToggle() -> UIView {
-        let container = UIStackView()
-        container.axis = .horizontal
-        container.spacing = 12
-        container.alignment = .center
-
-        let toggle = UISwitch()
-        toggle.isOn = SplitModeController.isEnabled
-        toggle.addTarget(self, action: #selector(splitModeToggled(_:)), for: .valueChanged)
-        container.addArrangedSubview(toggle)
-
-        let label = UILabel()
-        label.text = SplitModeController.isEnabled ? "Enabled" : "Disabled"
-        label.font = .systemFont(ofSize: 14)
-        label.textColor = subtleColor
-        label.tag = 999  // Tag so we can find and update it
-        container.addArrangedSubview(label)
-
-        container.addArrangedSubview(UIView())  // Spacer
-
-        return container
     }
 
     @objc private func splitModeToggled(_ sender: UISwitch) {
         SplitModeController.isEnabled = sender.isOn
-
-        // Update the label next to the toggle
-        if let stack = sender.superview as? UIStackView,
-           let label = stack.viewWithTag(999) as? UILabel {
-            label.text = sender.isOn ? "Enabled" : "Disabled"
-        }
     }
 }

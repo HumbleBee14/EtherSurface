@@ -1,50 +1,26 @@
-// SynthPanelViewController.swift — one independent synth panel (engine + surface + toolbar)
-//
-// A reusable view controller that owns one CsoundEngine, one TouchSurfaceView, and one
-// toolbar with five control buttons (Scale, Key, Octave, Size, Sound). Used twice in
-// SplitSynthViewController (left and right panels on iPad) or once in SceneDelegate
-// (full-screen on iPhone / split mode OFF on iPad).
-//
-// Each panel maintains its own parameter state independently.
-
 import UIKit
 import AVFoundation
 
 final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
 
-    // MARK: - Configuration
-
-    /// When false, the About button is omitted from the toolbar.
-    /// Used to avoid duplicating About on the left panel in split mode.
     var showsAboutButton: Bool = true
-
-    /// When true, the toolbar items are pushed to the trailing edge
-    /// (used for the right panel in split mode so its buttons hug the
-    /// far-right side instead of bumping into the center divider).
     var trailingAlignedToolbar: Bool = false
-
-    // MARK: - Components
 
     private let engine  = CsoundEngine()
     private let surface = TouchSurfaceView()
 
-    // MARK: - Toolbar buttons
-
-    private var scaleBtn:  UIButton!
-    private var keyBtn:    UIButton!
-    private var octBtn:    UIButton!
-    private var sizeBtn:   UIButton!
-    private var soundBtn:  UIButton!
-
-    // MARK: - State (mirrors CSD defaults)
+    private var scaleBtn: UIButton!
+    private var keyBtn:   UIButton!
+    private var octBtn:   UIButton!
+    private var sizeBtn:  UIButton!
+    private var soundBtn: UIButton!
+    private weak var settingsBtn: UIButton?
 
     private var selectedScale:  String = "Default"
     private var selectedKey:    Int    = 0
     private var selectedOctave: Int    = 4
     private var selectedSize:   Int    = 8
     private var selectedSound:  Int    = 0
-
-    // MARK: - Scales
 
     private let scaleMajor:   [Int] = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23]
     private let scaleMinor:   [Int] = [0, 2, 3, 5, 7, 8, 11, 12, 14, 15, 17, 19, 20, 23]
@@ -59,16 +35,13 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
     private let scaleOTLow:   [Int] = [-2]
     private let scaleOTHigh:  [Int] = [-3]
 
-    // MARK: - Lifecycle
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
         surface.delegate = self
         surface.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(surface)
-        // Surface extends behind the translucent toolbar so the blur has
-        // something (the column grid) to actually blur.
+        // Surface extends behind the translucent toolbar so the blur has content to sample.
         NSLayoutConstraint.activate([
             surface.topAnchor.constraint(equalTo: view.topAnchor),
             surface.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -97,8 +70,6 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
         engine.stop()
     }
 
-    // MARK: - TouchSurfaceDelegate
-
     func touchBegan(slot: Int, x: Float, y: Float) {
         engine.noteOn(slot: slot, x: x, y: y)
     }
@@ -110,8 +81,6 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
     func touchEnded(slot: Int) {
         engine.noteOff(slot: slot)
     }
-
-    // MARK: - Lifecycle notifications
 
     @objc private func appWillResignActive() {
         surface.cancelAllTouches()
@@ -130,15 +99,10 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
         }
     }
 
-    // MARK: - Toolbar (custom UIStackView — no UIToolbar pill padding)
-
     private func configureToolbar() {
-        // Clip so contents can't overflow this panel's bounds in split mode.
+        // Clip so toolbar can't overflow this panel's bounds in split mode.
         view.clipsToBounds = true
 
-        // Translucent blur (glassmorphic) bar — system blur with a faint tint
-        // so it still reads on light surfaces but lets the playing surface
-        // show through.
         let effect: UIVisualEffect
         if #available(iOS 26.0, *) {
             effect = UIGlassEffect()
@@ -164,17 +128,18 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
 
         var buttons: [UIButton] = [scaleBtn, keyBtn, octBtn, sizeBtn, soundBtn]
         if showsAboutButton {
-            let aboutBtn = UIButton(type: .system)
+            let gear = UIButton(type: .system)
             let cfg = UIImage.SymbolConfiguration(pointSize: 18, weight: .regular)
-            aboutBtn.setImage(UIImage(systemName: "gearshape", withConfiguration: cfg), for: .normal)
-            aboutBtn.tintColor = .white
-            aboutBtn.addTarget(self, action: #selector(showAbout), for: .touchUpInside)
-            buttons.append(aboutBtn)
+            gear.setImage(UIImage(systemName: "gearshape", withConfiguration: cfg), for: .normal)
+            gear.tintColor = .white
+            gear.addTarget(self, action: #selector(showSettings), for: .touchUpInside)
+            settingsBtn = gear
+            buttons.append(gear)
         }
 
         let stack = UIStackView(arrangedSubviews: buttons)
         stack.axis = .horizontal
-        stack.distribution = .fillEqually  // share space equally → all fit
+        stack.distribution = .fillEqually
         stack.alignment = .fill
         stack.spacing = 0
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -187,7 +152,6 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
         ])
     }
 
-    /// A flat tappable label that shows its menu on tap.
     private func makeBarButton(title: String, menu: UIMenu) -> UIButton {
         let b = UIButton(type: .system)
         b.setTitle(title, for: .normal)
@@ -206,8 +170,6 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
         let displayTitle = isDefault ? "• \(title)" : title
         return UIAction(title: displayTitle, state: isSelected ? .on : .off) { _ in handler() }
     }
-
-    // MARK: - Menu builders
 
     private struct ScaleOption {
         let name: String
@@ -301,11 +263,26 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
         return UIMenu(title: "Sound", children: actions)
     }
 
-    // MARK: - About
+    @objc private func showSettings() {
+        let settings = AboutViewController()
+        settings.modalPresentationStyle = .popover
+        settings.preferredContentSize = CGSize(width: 520, height: 560)
+        if let pop = settings.popoverPresentationController {
+            pop.sourceView = settingsBtn
+            pop.sourceRect = settingsBtn?.bounds ?? .zero
+            pop.permittedArrowDirections = .up
+            pop.delegate = self
+        }
+        present(settings, animated: true)
+    }
+}
 
-    @objc private func showAbout() {
-        let aboutVC = AboutViewController()
-        aboutVC.modalPresentationStyle = .pageSheet
-        present(aboutVC, animated: true)
+extension SynthPanelViewController: UIPopoverPresentationControllerDelegate {
+    // Keep popover style even on compact-width iPhones (prevents full-screen sheet).
+    func adaptivePresentationStyle(
+        for controller: UIPresentationController,
+        traitCollection: UITraitCollection
+    ) -> UIModalPresentationStyle {
+        .none
     }
 }

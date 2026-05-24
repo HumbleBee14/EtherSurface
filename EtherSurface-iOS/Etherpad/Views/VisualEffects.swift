@@ -1,5 +1,3 @@
-// VisualEffects.swift — user-selectable touch surface visualizations.
-
 import Foundation
 
 struct VisualEffects: OptionSet {
@@ -14,10 +12,10 @@ struct VisualEffects: OptionSet {
 
     var label: String {
         switch self {
-        case .ripple:     return "Ripple on touch"
-        case .trail:      return "Finger trail"
-        case .intensity:  return "Y-intensity ring"
-        case .columnGlow: return "Pitch column glow"
+        case .ripple:     return "Ripple"
+        case .trail:      return "Trail"
+        case .intensity:  return "Intensity Ring"
+        case .columnGlow: return "Column Glow"
         default:          return ""
         }
     }

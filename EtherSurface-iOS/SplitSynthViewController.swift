@@ -1,30 +1,15 @@
-// SplitSynthViewController.swift — iPad split-screen dual-synth container
-//
-// On iPad: manages two SynthPanelViewController instances (left/right) with shared About sheet.
-// Configures AVAudioSession once. Listens to SplitModeController changes and transitions
-// between split layout and single-synth full-screen.
-//
-// On iPhone: this VC should not be instantiated (SceneDelegate routes to EtherpadViewController instead).
-
 import UIKit
 import AVFoundation
 
 final class SplitSynthViewController: UIViewController {
 
-    // MARK: - Child view controllers
-
     private var leftPanel:  SynthPanelViewController?
     private var rightPanel: SynthPanelViewController?
-
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         configureAudioSession()
-
-        // On first launch, split mode is OFF — show single synth.
-        // When user toggles split mode ON in About, we rebuild the layout.
         rebuildLayout()
 
         NotificationCenter.default.addObserver(
@@ -40,8 +25,6 @@ final class SplitSynthViewController: UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
-    // MARK: - Audio session
-
     private func configureAudioSession() {
         do {
             let session = AVAudioSession.sharedInstance()
@@ -53,14 +36,11 @@ final class SplitSynthViewController: UIViewController {
         }
     }
 
-    // MARK: - Layout rebuild
-
     @objc private func splitModeDidChange() {
         rebuildLayout()
     }
 
     private func rebuildLayout() {
-        // Remove old child VCs (but keep toolbar)
         leftPanel?.willMove(toParent: nil)
         rightPanel?.willMove(toParent: nil)
         leftPanel?.view.removeFromSuperview()
@@ -70,36 +50,21 @@ final class SplitSynthViewController: UIViewController {
         leftPanel = nil
         rightPanel = nil
 
-        // Remove dividers from previous split layout (anything that isn't a UIToolbar)
-        for sub in view.subviews where !(sub is UIToolbar) {
-            sub.removeFromSuperview()
-        }
+        for sub in view.subviews { sub.removeFromSuperview() }
 
         if SplitModeController.isEnabled {
             layoutSplitMode()
         } else {
             layoutSingleMode()
         }
-
-        // Make sure toolbar stays on top
-        for sub in view.subviews where sub is UIToolbar {
-            view.bringSubviewToFront(sub)
-        }
     }
 
-    // Split mode: two panels side-by-side with a visible gap + divider
     private func layoutSplitMode() {
-        // Dark gutter color shows through the gap between the two panels
         view.backgroundColor = UIColor(red: 0x1a/255, green: 0x1e/255, blue: 0x22/255, alpha: 1)
 
         let left = SynthPanelViewController()
         let right = SynthPanelViewController()
-
-        // Hide About from the left panel to save toolbar space in split mode;
-        // the right panel still has it and opens the same About sheet.
         left.showsAboutButton = false
-        // Right panel's buttons hug the right edge so they don't collide
-        // with the left panel's buttons across the center gutter.
         right.trailingAlignedToolbar = true
 
         leftPanel = left
@@ -114,7 +79,6 @@ final class SplitSynthViewController: UIViewController {
         view.addSubview(left.view)
         view.addSubview(right.view)
 
-        // Gutter: total ~16pt gap (8pt on each side of the center)
         let halfGap: CGFloat = 8
 
         NSLayoutConstraint.activate([
@@ -132,7 +96,6 @@ final class SplitSynthViewController: UIViewController {
         left.didMove(toParent: self)
         right.didMove(toParent: self)
 
-        // Crisp accent divider centered in the gutter
         let divider = UIView()
         divider.backgroundColor = UIColor(red: 0xe9/255, green: 0xd6/255, blue: 0x6b/255, alpha: 0.85)
         divider.translatesAutoresizingMaskIntoConstraints = false
@@ -143,11 +106,8 @@ final class SplitSynthViewController: UIViewController {
             divider.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             divider.widthAnchor.constraint(equalToConstant: 3),
         ])
-
-        print("[Etherpad] Split mode: 2 synths side-by-side")
     }
 
-    // Single mode: one panel full-screen (below toolbar)
     private func layoutSingleMode() {
         let panel = SynthPanelViewController()
         leftPanel = panel
@@ -165,8 +125,5 @@ final class SplitSynthViewController: UIViewController {
         ])
 
         panel.didMove(toParent: self)
-
-        print("[Etherpad] Single mode: 1 synth full-screen")
     }
-
 }

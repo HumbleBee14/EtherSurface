@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +42,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,14 +50,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.humblebee.etherpad.R
 
-/**
- * Centred About dialog. Uses a plain [Dialog] (not a bottom sheet) so the
- * card is centred over the playing surface and the whole content area is
- * vertically scrollable — important in landscape where the device is
- * short.
- *
- * Dismissed by tapping the close button, the scrim, or the back press.
- */
 @Composable
 internal fun AboutSheet(
     initialEffects: Set<VisualEffect>,
@@ -63,6 +58,7 @@ internal fun AboutSheet(
 ) {
     val ctx = LocalContext.current
     var effects by remember { mutableStateOf(initialEffects) }
+    var visualsEnabled by remember { mutableStateOf(initialEffects.isNotEmpty()) }
 
     val bg       = Color(0xFF3B444B)
     val textCol  = Color(0xFF5072A7)
@@ -78,87 +74,102 @@ internal fun AboutSheet(
             color = bg,
             modifier = Modifier
                 .widthIn(min = 360.dp, max = 520.dp)
-                .heightIn(max = 460.dp)
+                .heightIn(max = 520.dp)
                 .padding(16.dp),
         ) {
             Box {
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 24.dp, vertical = 20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                        .padding(vertical = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     Text(
                         "Etherpad",
                         color = textCol,
-                        fontSize = 24.sp,
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
                     Text(
                         "A multi-touch synth for Android",
                         color = textCol,
                         fontSize = 13.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
                     Spacer(Modifier.height(8.dp))
 
-                    Text(
-                        "Visualizations",
-                        color = textCol,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-
-                    VisualEffectGrid(
-                        selected = effects,
-                        onToggle = { effect ->
-                            val next = when {
-                                effect == null -> emptySet()
-                                effect in effects -> effects - effect
-                                else -> effects + effect
+                    SectionHeaderWithToggle(
+                        title = "Visualizations",
+                        checked = visualsEnabled,
+                        textColor = textCol,
+                        onCheckedChange = { on ->
+                            visualsEnabled = on
+                            val next: Set<VisualEffect> = if (on) {
+                                if (effects.isEmpty()) setOf(VisualEffect.Ripple) else effects
+                            } else {
+                                emptySet()
                             }
                             effects = next
                             saveVisualEffects(ctx, next)
                             onEffectsChanged(next)
                         },
-                        textColor = textCol,
                     )
 
-                    Spacer(Modifier.height(10.dp))
+                    if (visualsEnabled) {
+                        VisualEffectGrid(
+                            selected = effects,
+                            textColor = textCol,
+                            selectedBg = linkCol,
+                            selectedFg = bg,
+                            onToggle = { effect ->
+                                val next = if (effect in effects) effects - effect else effects + effect
+                                effects = next
+                                saveVisualEffects(ctx, next)
+                                onEffectsChanged(next)
+                            },
+                        )
+                    }
 
-                    Text(
-                        "Android app by Dinesh",
-                        color = textCol,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                    Spacer(Modifier.height(12.dp))
 
-                    val linkText = buildAnnotatedString {
+                    val devText = buildAnnotatedString {
+                        withStyle(SpanStyle(color = textCol)) { append("Developer: Dinesh (") }
                         withStyle(SpanStyle(color = linkCol)) { append("dineshy.com") }
+                        withStyle(SpanStyle(color = textCol)) { append(")") }
                     }
                     Text(
-                        text = linkText,
-                        fontSize = 13.sp,
-                        modifier = Modifier.clickable {
-                            ctx.startActivity(
-                                Intent(Intent.ACTION_VIEW, Uri.parse("https://dineshy.com")),
-                            )
-                        },
+                        text = devText,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clickable {
+                                ctx.startActivity(
+                                    Intent(Intent.ACTION_VIEW, Uri.parse("https://dineshy.com")),
+                                )
+                            },
                     )
 
                     Text(
-                        "Inspired by the original EtherSurface by Paul Batchelor.",
+                        "Credits: Inspired by the original EtherSurface by Paul Batchelor.",
                         color = subtle,
-                        fontSize = 11.sp,
+                        fontSize = 13.sp,
                         fontStyle = FontStyle.Italic,
+                        modifier = Modifier.padding(horizontal = 16.dp),
                     )
+
+                    Spacer(Modifier.height(8.dp))
 
                     Image(
                         painter = painterResource(id = R.drawable.logo_shadow),
                         contentDescription = null,
-                        modifier = Modifier.size(72.dp),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .size(72.dp),
                     )
                 }
 
@@ -175,31 +186,61 @@ internal fun AboutSheet(
     }
 }
 
-/**
- * 3-column chip grid: "None" + 4 effect chips. "None" clears every effect;
- * each effect chip toggles its membership. The on/off state is shown by a
- * leading ☑ or ☐ glyph.
- */
+@Composable
+private fun SectionHeaderWithToggle(
+    title: String,
+    checked: Boolean,
+    textColor: Color,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+    ) {
+        Text(
+            title,
+            color = textColor,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.weight(1f),
+        )
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = textColor,
+            ),
+        )
+    }
+}
+
 @Composable
 private fun VisualEffectGrid(
     selected: Set<VisualEffect>,
-    onToggle: (VisualEffect?) -> Unit,
     textColor: Color,
+    selectedBg: Color,
+    selectedFg: Color,
+    onToggle: (VisualEffect) -> Unit,
 ) {
-    val items: List<Pair<String, VisualEffect?>> =
-        listOf("None" to null) + VisualEffect.all.map { it.label to it }
-
-    val chunks = items.chunked(3)
-
+    val rows = VisualEffect.all.chunked(2)
     Column(
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        chunks.forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                row.forEach { (label, effect) ->
-                    val isOn = if (effect == null) selected.isEmpty() else effect in selected
-                    Chip(label = label, isOn = isOn, textColor = textColor) { onToggle(effect) }
+        rows.forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                row.forEach { effect ->
+                    Chip(
+                        label = effect.label,
+                        isOn = effect in selected,
+                        textColor = textColor,
+                        selectedBg = selectedBg,
+                        selectedFg = selectedFg,
+                        modifier = Modifier.weight(1f),
+                    ) { onToggle(effect) }
                 }
             }
         }
@@ -207,16 +248,32 @@ private fun VisualEffectGrid(
 }
 
 @Composable
-private fun Chip(label: String, isOn: Boolean, textColor: Color, onClick: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.White.copy(alpha = 0.06f))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 10.dp, vertical = 8.dp),
+private fun Chip(
+    label: String,
+    isOn: Boolean,
+    textColor: Color,
+    selectedBg: Color,
+    selectedFg: Color,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    val bg = if (isOn) selectedBg else Color.White.copy(alpha = 0.06f)
+    val fg = if (isOn) selectedFg else textColor
+    Box(
+        modifier = modifier
+            .height(56.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(bg)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
     ) {
-        Text(if (isOn) "☑ " else "☐ ", color = textColor, fontSize = 16.sp)
-        Text(label, color = textColor, fontSize = 12.sp)
+        Text(
+            text = label,
+            color = fg,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+        )
     }
 }

@@ -124,10 +124,12 @@ final class TouchSurfaceView: UIView {
             for (_, pts) in trails {
                 for tp in pts {
                     let age = now - tp.t
-                    let alpha = max(0, 1 - age / Self.trailDuration) * 0.35
+                    let life = max(0, 1 - age / Self.trailDuration)
+                    let alpha = life * 0.35
+                    // Older points shrink toward 30% of their original radius for a tapered trail.
+                    let r: CGFloat = 18 * (0.3 + 0.7 * CGFloat(life))
                     ctx.setFillColor(UIColor(red: 233/255, green: 214/255, blue: 107/255,
                                              alpha: alpha).cgColor)
-                    let r: CGFloat = 18
                     ctx.fillEllipse(in: CGRect(x: tp.p.x - r, y: tp.p.y - r, width: r * 2, height: r * 2))
                 }
             }

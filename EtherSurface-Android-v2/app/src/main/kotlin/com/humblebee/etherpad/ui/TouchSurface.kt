@@ -158,11 +158,14 @@ internal fun TouchSurface(
             state.trails.values.forEach { points ->
                 points.forEach { tp ->
                     val ageS = (nowNs - tp.startNs) / 1_000_000_000f
-                    val alpha = (1f - ageS / TRAIL_DURATION_S).coerceIn(0f, 1f) * 0.35f
+                    val life = (1f - ageS / TRAIL_DURATION_S).coerceIn(0f, 1f)
+                    val alpha = life * 0.35f
+                    // Older points shrink toward 30% of their original radius for a tapered trail.
+                    val radius = (18f * density) * (0.3f + 0.7f * life)
                     if (alpha > 0f) {
                         drawCircle(
                             color = EtherColors.FingerCircle.copy(alpha = alpha),
-                            radius = 18f * density,
+                            radius = radius,
                             center = tp.pos,
                         )
                     }

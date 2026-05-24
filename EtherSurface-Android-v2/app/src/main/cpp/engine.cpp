@@ -283,35 +283,35 @@ std::string jstringToStd(JNIEnv* env, jstring js) {
 extern "C" {
 
 JNIEXPORT jboolean JNICALL
-Java_com_humblebee_etherpad_EtherEngine_nativeLoad(JNIEnv* env, jobject, jstring csdText) {
+Java_com_humblebee_etherpad_engine_EtherEngine_nativeLoad(JNIEnv* env, jobject, jstring csdText) {
     return gEngine().load(jstringToStd(env, csdText)) ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_humblebee_etherpad_EtherEngine_nativeStart(JNIEnv*, jobject) {
+Java_com_humblebee_etherpad_engine_EtherEngine_nativeStart(JNIEnv*, jobject) {
     return gEngine().start() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL
-Java_com_humblebee_etherpad_EtherEngine_nativeStop(JNIEnv*, jobject) {
+Java_com_humblebee_etherpad_engine_EtherEngine_nativeStop(JNIEnv*, jobject) {
     gEngine().stop();
 }
 
 JNIEXPORT void JNICALL
-Java_com_humblebee_etherpad_EtherEngine_nativeSetControlChannel(JNIEnv* env, jobject,
+Java_com_humblebee_etherpad_engine_EtherEngine_nativeSetControlChannel(JNIEnv* env, jobject,
                                                                 jstring name, jdouble value) {
     auto n = jstringToStd(env, name);
     gEngine().setControlChannel(n.c_str(), value);
 }
 
 JNIEXPORT void JNICALL
-Java_com_humblebee_etherpad_EtherEngine_nativeInputMessage(JNIEnv* env, jobject, jstring score) {
+Java_com_humblebee_etherpad_engine_EtherEngine_nativeInputMessage(JNIEnv* env, jobject, jstring score) {
     auto s = jstringToStd(env, score);
     gEngine().inputMessage(s.c_str());
 }
 
 JNIEXPORT jdouble JNICALL
-Java_com_humblebee_etherpad_EtherEngine_nativeGetControlChannel(JNIEnv* env, jobject, jstring name) {
+Java_com_humblebee_etherpad_engine_EtherEngine_nativeGetControlChannel(JNIEnv* env, jobject, jstring name) {
     auto n = jstringToStd(env, name);
     return gEngine().getControlChannel(n.c_str());
 }

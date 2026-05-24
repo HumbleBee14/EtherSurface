@@ -35,6 +35,53 @@ gisound init 0
 gisig ftgen	0,0, 257, 9, .5,1,270	; define a sigmoid, or better 
 
 gipalamin ftgen 0, 0, 8192, -12, 20.0
+
+/*
+vowel - vowel filter with morfable vowels
+CREDITS: Isaac Wallis Author.
+*/
+givow_a	ftgentmp 0, 0, 16, -2, 600, 1040, 2250, 2450, 2750, 0,  -7,  -9,  -9, -20, 60, 70, 110, 120, 130
+givow_e	ftgentmp 0, 0, 16, -2, 400, 1620, 2400, 2800, 3100, 0, -12,  -9, -12, -18, 40, 80, 100, 120, 120
+givow_i	ftgentmp 0, 0, 16, -2, 350, 1700, 2700, 3700, 4950, 0, -20, -30, -22, -28, 60, 90, 100, 120, 120
+givow_o	ftgentmp 0, 0, 16, -2, 450, 800,  2830, 3500, 4950, 0, -11, -21, -20, -40, 40, 80, 100, 120, 120
+givow_u	ftgentmp 0, 0, 16, -2, 325, 700,  2530, 3500, 4950, 0, -20, -32, -28, -36, 40, 80, 100, 120, 120
+givowindx	ftgentmp 0, 0, 16, -2, givow_a, givow_e, givow_i, givow_a, \
+givow_o, givow_u, givow_e, givow_o, \
+givow_i, givow_u, givow_a, givow_o, \
+givow_a, givow_a, givow_a, givow_a, givow_a
+
+opcode vowel, a,aki
+asig,kmorf, imode xin
+imorf	ftgentmp 0, 0, 16, 10, 1
+ifenv	ftgentmp 0, 0, 4096, 19, .5, .5, 270, .5
+ivib	ftgentmp 0, 0, 4096, 10, 1
+	ftmorf	kmorf, givowindx, imorf
+kfx	=	0
+kform1	table	kfx,   imorf
+kform2	table	kfx+1, imorf
+kform3	table	kfx+2, imorf
+kform4	table	kfx+3, imorf
+kform5	table	kfx+4, imorf
+kamp1	table	kfx+5, imorf
+kamp2	table	kfx+6, imorf
+kamp3	table	kfx+7, imorf
+kamp4	table	kfx+8, imorf
+kamp5	table	kfx+9, imorf
+kbw1	table	kfx+10,imorf
+kbw2	table	kfx+11,imorf
+kbw3	table	kfx+12, imorf
+kbw4	table	kfx+13, imorf
+kbw5	table	kfx+14, imorf
+iolaps	=	200
+a1 butbp asig*db(kamp1), kform1, kbw1
+a2 butbp asig*db(kamp2), kform2, kbw2
+a3 butbp asig*db(kamp3), kform3, kbw3
+a4 butbp asig*db(kamp4), kform4, kbw4
+a5 butbp asig*db(kamp5), kform5, kbw5
+asig	=	a1+a2+a3+a4+a5
+	xout	asig
+	endop
+
 instr 2
 a1 oscils 0.1, 400, 0
 ;outs a1, a1
@@ -128,6 +175,19 @@ a2			oscili       .03*kadsr*a4, ao2+kcps_flat - cpsoct(ishift), gisine ;fnl outr
 
 a1 = a1 + asineL * ky
 a2 = a2 + asineR * ky
+elseif(gisound = 3) then
+;Give It a Tri
+a1 vco2 ky * 0.05, kcps_flat, 12
+aenv linsegr 0, 0.005, 1, 0.5, 0
+a1 = a1 * aenv
+a2 = a1
+elseif(gisound = 4) then
+;Digital Monk
+a1 vco2 0.1 + 0.3 * ky, kcps * 0.5, 2, 0.05
+a1 vowel a1, (1 - ky) * 12, 0
+a1 butlp a1, scale(1 - ky, 200, 10000)
+a1 = a1 * linsegr(0, 0.005, 1, 0.5, 0)
+a2 = a1
 
 endif
 

@@ -49,7 +49,19 @@ final class AboutViewController: UIViewController {
         tagline.numberOfLines = 0
         stack.addArrangedSubview(tagline)
 
-        stack.addArrangedSubview(makeSpacer(8))
+        stack.addArrangedSubview(makeSpacer(16))
+
+        // Visualizations
+        let visHeader = UILabel()
+        visHeader.text = "Visualizations"
+        visHeader.font = .systemFont(ofSize: 15, weight: .semibold)
+        visHeader.textColor = textColor
+        visHeader.textAlignment = .center
+        stack.addArrangedSubview(visHeader)
+
+        stack.addArrangedSubview(makeEffectGrid())
+
+        stack.addArrangedSubview(makeSpacer(20))
 
         // Performance tip
         let tip = UILabel()
@@ -60,7 +72,7 @@ final class AboutViewController: UIViewController {
         tip.numberOfLines = 0
         stack.addArrangedSubview(tip)
 
-        stack.addArrangedSubview(makeSpacer(8))
+        stack.addArrangedSubview(makeSpacer(12))
 
         // Developer credit
         let devLabel = UILabel()
@@ -75,20 +87,6 @@ final class AboutViewController: UIViewController {
             leading: "",
             linkText: "dineshy.com",
             url: URL(string: "https://dineshy.com")!))
-
-        stack.addArrangedSubview(makeSpacer(24))
-
-        // Visualizations
-        let visHeader = UILabel()
-        visHeader.text = "Visualizations"
-        visHeader.font = .systemFont(ofSize: 15, weight: .semibold)
-        visHeader.textColor = textColor
-        visHeader.textAlignment = .center
-        stack.addArrangedSubview(visHeader)
-
-        stack.addArrangedSubview(makeEffectGrid())
-
-        stack.addArrangedSubview(makeSpacer(20))
 
         // One-line credit to the original Android author.
         let creditLabel = UILabel()

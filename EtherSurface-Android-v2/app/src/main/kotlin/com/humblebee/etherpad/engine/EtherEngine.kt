@@ -1,4 +1,4 @@
-package com.humblebee.etherpad
+package com.humblebee.etherpad.engine
 
 /**
  * Kotlin facade for the C++ native engine.

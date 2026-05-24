@@ -141,10 +141,8 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
         octBtn    = UIBarButtonItem(title: "Octave", menu: buildOctaveMenu())
         sizeBtn   = UIBarButtonItem(title: "Size",   menu: buildSizeMenu())
         soundBtn  = UIBarButtonItem(title: "Sound",  menu: buildSoundMenu())
-        let aboutBtn = UIBarButtonItem(title: "About", style: .plain, target: self,
-                                       action: #selector(showAbout))
 
-        toolbar.items = [scaleBtn, flex, keyBtn, flex, octBtn, flex, sizeBtn, flex, soundBtn, flex, aboutBtn]
+        toolbar.items = [scaleBtn, flex, keyBtn, flex, octBtn, flex, sizeBtn, flex, soundBtn]
     }
 
     private func makeAction(title: String, isSelected: Bool, isDefault: Bool = false,
@@ -250,13 +248,5 @@ final class SynthPanelViewController: UIViewController, TouchSurfaceDelegate {
             }
         }
         return UIMenu(title: "Sound", children: actions)
-    }
-
-    // MARK: - About
-
-    @objc private func showAbout() {
-        let aboutVC = AboutViewController()
-        aboutVC.modalPresentationStyle = .pageSheet
-        present(aboutVC, animated: true)
     }
 }

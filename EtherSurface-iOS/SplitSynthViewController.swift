@@ -126,16 +126,6 @@ final class SplitSynthViewController: UIViewController {
             divider.widthAnchor.constraint(equalToConstant: 2),
         ])
 
-        // Add centered info button at top
-        let infoBtn = UIButton(type: .infoLight)
-        infoBtn.translatesAutoresizingMaskIntoConstraints = false
-        infoBtn.addTarget(self, action: #selector(showAbout), for: .touchUpInside)
-        view.addSubview(infoBtn)
-        NSLayoutConstraint.activate([
-            infoBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            infoBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
-        ])
-
         print("[Etherpad] Split mode: 2 synths side-by-side")
     }
 
@@ -159,13 +149,5 @@ final class SplitSynthViewController: UIViewController {
         panel.didMove(toParent: self)
 
         print("[Etherpad] Single mode: 1 synth full-screen")
-    }
-
-    // MARK: - About
-
-    @objc private func showAbout() {
-        let aboutVC = AboutViewController()
-        aboutVC.modalPresentationStyle = .pageSheet
-        present(aboutVC, animated: true)
     }
 }

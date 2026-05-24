@@ -17,6 +17,9 @@
 		B5485E7CEEF6E31ED6EA3E5D /* TouchSurfaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCDF72A7572D182527EB70C /* TouchSurfaceView.swift */; };
 		B5485E7CEEF6E31ED6EA3E5E /* VisualEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCDF72A7572D182527EB70D /* VisualEffects.swift */; };
 		C397246D22AFB03BCAD1F348 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F596F37EDCAD3A5897614F3 /* Assets.xcassets */; };
+		E930DABC2FC2BBC40083C323 /* SplitModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E930DAB92FC2BBC40083C323 /* SplitModeController.swift */; };
+		E930DABD2FC2BBC40083C323 /* SplitSynthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E930DABA2FC2BBC40083C323 /* SplitSynthViewController.swift */; };
+		E930DABE2FC2BBC40083C323 /* SynthPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E930DABB2FC2BBC40083C323 /* SynthPanelViewController.swift */; };
 		E9D3E6CD2FC13CFB005E6DA3 /* CsoundiOS.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9D3E6CA2FC13C2D005E6DA3 /* CsoundiOS.xcframework */; };
 		E9D3E6D12FC13D02005E6DA3 /* libSndfileiOS.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9D3E6CB2FC13C38005E6DA3 /* libSndfileiOS.xcframework */; };
 		E9D3E6D82FC13F2F005E6DA3 /* CsoundMIDI.m in Sources */ = {isa = PBXBuildFile; fileRef = E9D3E6D72FC13F2F005E6DA3 /* CsoundMIDI.m */; };
@@ -41,6 +44,9 @@
 		CC90D15AF8CA6F08D2A79874 /* Etherpad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Etherpad.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D45A6FC8E72E5F76D667776A /* EtherpadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherpadViewController.swift; sourceTree = "<group>"; };
 		E57CB3960F46B4B9EBF73C39 /* Etherpad-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Etherpad-Bridging-Header.h"; sourceTree = "<group>"; };
+		E930DAB92FC2BBC40083C323 /* SplitModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitModeController.swift; sourceTree = "<group>"; };
+		E930DABA2FC2BBC40083C323 /* SplitSynthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitSynthViewController.swift; sourceTree = "<group>"; };
+		E930DABB2FC2BBC40083C323 /* SynthPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynthPanelViewController.swift; sourceTree = "<group>"; };
 		E9D3E6CA2FC13C2D005E6DA3 /* CsoundiOS.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = CsoundiOS.xcframework; sourceTree = "<group>"; };
 		E9D3E6CB2FC13C38005E6DA3 /* libSndfileiOS.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libSndfileiOS.xcframework; sourceTree = "<group>"; };
 		E9D3E6D62FC13F2F005E6DA3 /* CsoundMIDI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CsoundMIDI.h; sourceTree = "<group>"; };
@@ -73,6 +79,9 @@
 		3D7980E591E911F6833DE9F8 = {
 			isa = PBXGroup;
 			children = (
+				E930DAB92FC2BBC40083C323 /* SplitModeController.swift */,
+				E930DABA2FC2BBC40083C323 /* SplitSynthViewController.swift */,
+				E930DABB2FC2BBC40083C323 /* SynthPanelViewController.swift */,
 				64B5B26DB148A762B90F836A /* Etherpad */,
 				DEBA61FC52554F67FB46D7E1 /* Headers */,
 				E8E9C118AF0EF0C30AFD340C /* Products */,
@@ -229,6 +238,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				E9D3E6D82FC13F2F005E6DA3 /* CsoundMIDI.m in Sources */,
+				E930DABC2FC2BBC40083C323 /* SplitModeController.swift in Sources */,
+				E930DABD2FC2BBC40083C323 /* SplitSynthViewController.swift in Sources */,
+				E930DABE2FC2BBC40083C323 /* SynthPanelViewController.swift in Sources */,
 				FF365A60A91F3EA0C24E056E /* AboutViewController.swift in Sources */,
 				5E2F8DAAF338A0A386BAA573 /* AppDelegate.swift in Sources */,
 				5E2F8DAAF338A0A386BAA574 /* SceneDelegate.swift in Sources */,

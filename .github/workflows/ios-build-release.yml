@@ -35,6 +35,7 @@ jobs:
             -configuration Release \
             -sdk iphonesimulator \
             -derivedDataPath build/DerivedData \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=YES \
             build
 
       - name: Create Dummy IPA
